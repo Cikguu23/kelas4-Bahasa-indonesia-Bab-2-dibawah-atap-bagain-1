@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Bahasa Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/file-saver/dist/FileSaver.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #8B4513, #A52A2A, #CD5C5C);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        
+        .card {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FF8C00, #FF4500);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #4682B4, #1E90FF);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(30, 144, 255, 0.4);
+        }
+        
+        .menu-item {
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .animated-icon {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .quiz-option {
+            transition: all 0.2s;
+        }
+        
+        .quiz-option:hover:not(.selected) {
+            background-color: #f0f0f0;
+            transform: translateX(5px);
+        }
+        
+        .quiz-option.selected {
+            background-color: #FFD700;
+            border-color: #FF8C00;
+        }
+        
+        .quiz-option.correct {
+            background-color: #90EE90;
+            border-color: #32CD32;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: #FFA07A;
+            border-color: #FF6347;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f2d74e;
+            opacity: 0;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+        
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+            background: #FF8C00;
+            border-radius: 10px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #FF4500;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div id="app" class="max-w-6xl mx-auto">
+        <!-- Beranda -->
+        <div id="beranda" class="card p-8 text-center">
+            <h1 class="text-4xl font-bold mb-4 text-orange-600">Media Pembelajaran Interaktif</h1>
+            <h2 class="text-3xl font-bold mb-6 text-blue-700">Bahasa Indonesia</h2>
+            <div class="flex justify-center mb-8">
+                <div class="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center animated-icon">
+                    <span class="text-6xl">📚</span>
+                </div>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4">Bab 2: Di Bawah Atap</h3>
+            <p class="text-lg mb-8">Kurikulum Merdeka</p>
+            <button id="btnMulai" class="btn-primary text-white font-bold py-4 px-8 rounded-full text-xl">
+                Mulai Belajar
+            </button>
+        </div>
+
+        <!-- Menu Utama -->
+        <div id="menuUtama" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showSection('materi')">
+                    <div class="text-5xl mb-4">📖</div>
+                    <h3 class="text-xl font-bold text-blue-700">Materi</h3>
+                    <p class="text-gray-600">Pelajari materi Bahasa Indonesia</p>
+                </div>
+                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showQuizForm()">
+                    <div class="text-5xl mb-4">❓</div>
+                    <h3 class="text-xl font-bold text-blue-700">Quiz</h3>
+                    <p class="text-gray-600">Uji pemahaman kamu</p>
+                </div>
+                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showSection('peringkat')">
+                    <div class="text-5xl mb-4">🏆</div>
+                    <h3 class="text-xl font-bold text-blue-700">Peringkat</h3>
+                    <p class="text-gray-600">Lihat peringkat terbaik</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showSection('rekap')">
+                    <div class="text-5xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold text-blue-700">Rekap</h3>
+                    <p class="text-gray-600">Lihat rekap nilai siswa</p>
+                </div>
+                <div class="card p-6 text-center menu-item cursor-pointer" onclick="exportToExcel()">
+                    <div class="text-5xl mb-4">📥</div>
+                    <h3 class="text-xl font-bold text-blue-700">Export Excel</h3>
+                    <p class="text-gray-600">Unduh data dalam format Excel</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Quiz -->
+        <div id="quizForm" class="hidden card p-6">
+            <h2 class="text-2xl font-bold mb-4 text-center text-blue-700">Identitas Peserta</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="namaSekolah">
+                    Nama Sekolah
+                </label>
+                <input id="namaSekolah" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan nama sekolah">
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="namaSiswa">
+                    Nama Siswa
+                </label>
+                <input id="namaSiswa" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan nama siswa">
+            </div>
+            <div class="flex justify-center">
+                <button id="btnMulaiQuiz" class="btn-primary text-white font-bold py-2 px-6 rounded-full">
+                    Mulai Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Materi -->
+        <div id="materi" class="hidden card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-700">Materi Bahasa Indonesia</h2>
+                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
+                    Kembali ke Menu
+                </button>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-4 text-orange-600">A. Kata-kata Baru</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">keran</span>
+                            <span>Tempat keluar air yang bisa dibuka dan ditutup</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">membuntuti</span>
+                            <span>Mengikuti</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">mawar</span>
+                            <span>Nama jenis bunga</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">sukulen</span>
+                            <span>Sejenis tanaman berdaun tebal</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">molen</span>
+                            <span>Nama kucing Tigor</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">kepala suku</span>
+                            <span>Orang yang memimpin suku</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">kabur</span>
+                            <span>Berlari cepat-cepat, melarikan diri, juga bisa berarti tidak jelas terlihat</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">gerimis</span>
+                            <span>Hujan rintik-rintik</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">inang</span>
+                            <span>Panggilan untuk ibu dalam bahasa Batak</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">sistematis</span>
+                            <span>Dengan cara yang teratur</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between">
+                            <span class="font-bold text-blue-700">marga</span>
+                            <span>Kelompok kekerabatan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-4 text-orange-600">B. Kata Bermakna Ganda</h3>
+                <div class="bg-white p-4 rounded-lg shadow mb-4">
+                    <p class="mb-2"><em>Kalau tidak memakai kacamata, semua tampak kabur bagi Ruli.</em></p>
+                    <p class="mb-4"><em>Begitu Tigor menyalakan keran, Molen segera kabur masuk rumah.</em></p>
+                    <p class="font-bold mb-2">Samakah arti kata /kabur/ pada kedua kalimat di atas?</p>
+                    <p>Dapat kita lihat bahwa terdapat dua arti kata /kabur/. Di dalam bahasa Indonesia, ada beberapa kata yang memiliki arti lebih dari satu. Kata seperti itu disebut homonim.</p>
+                    <p class="font-bold mt-2">Homonim: kata yang sama lafal dan ejaannya, tetapi berbeda maknanya.</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-orange-100">
+                                <th class="border border-orange-300 p-2">Kata</th>
+                                <th class="border border-orange-300 p-2">Arti 1</th>
+                                <th class="border border-orange-300 p-2">Arti 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">Bisa</td>
+                                <td class="border border-orange-300 p-2">Racun</td>
+                                <td class="border border-orange-300 p-2">Dapat/mampu</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">Bulan</td>
+                                <td class="border border-orange-300 p-2">Benda langit</td>
+                                <td class="border border-orange-300 p-2">Satuan waktu (30 hari)</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">Kali</td>
+                                <td class="border border-orange-300 p-2">Sungai</td>
+                                <td class="border border-orange-300 p-2">Perkalian</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">Palu</td>
+                                <td class="border border-orange-300 p-2">Alat pemukul</td>
+                                <td class="border border-orange-300 p-2">Nama kota</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">Rapat</td>
+                                <td class="border border-orange-300 p-2">Pertemuan</td>
+                                <td class="border border-orange-300 p-2">Dekat/tidak renggang</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-orange-600">C. Awalan 'me-'</h3>
+                <div class="bg-white p-4 rounded-lg shadow mb-4">
+                    <p>Kamu sudah mengenal awalan 'me-' sebagai pembentuk kata kerja. Tergantung kata dasarnya, awalan 'me-' bisa berubah bentuk menjadi 'men-', 'mem-', 'menge-', 'meny-', atau tetap 'me-'.</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-orange-100">
+                                <th class="border border-orange-300 p-2">Awalan 'me-'</th>
+                                <th class="border border-orange-300 p-2">Kata Dasar</th>
+                                <th class="border border-orange-300 p-2">Kata Berimbuhan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold" rowspan="2">me-</td>
+                                <td class="border border-orange-300 p-2">/l/, /m/, /n/, /r/, /w/, /y/<br>lihat, minum, nyanyi, rawat, warna, yakin</td>
+                                <td class="border border-orange-300 p-2">melihat, meminum, menyanyi, merawat, mewarna[i], meyakin[i]</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2">/c/, /d/, /j/, /t*/<br>cuci, dengar, jemput, tulis</td>
+                                <td class="border border-orange-300 p-2">mencuci, mendengar, menjemput, menulis*</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">mem-</td>
+                                <td class="border border-orange-300 p-2">/b/, /f/, /p*/, /v/<br>buka, foto, pegang, program, veto</td>
+                                <td class="border border-orange-300 p-2">membuka, memfoto, memegang*, memprogram, memveto</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">meng-</td>
+                                <td class="border border-orange-300 p-2">/a/, /e/, /g/, /h/, /i/, /k*/, /o/, /u/<br>ayun, ekor, gali, halau, injak, kupas, kristal, obrol, undang</td>
+                                <td class="border border-orange-300 p-2">mengayun, mengekor, menggali, menghalau, menginjak, mengupas*, mengkristal, mengobrol, mengundang</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">menge-</td>
+                                <td class="border border-orange-300 p-2">bersuku kata satu<br>tik, cat, pel</td>
+                                <td class="border border-orange-300 p-2">mengetik, mengecat, mengepel</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-orange-300 p-2 font-bold">meny-</td>
+                                <td class="border border-orange-300 p-2">/s/*<br>siram, sapu</td>
+                                <td class="border border-orange-300 p-2">menyiram*, menyapu*</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="mt-4">
+                        <p class="mb-2">Apakah kamu melihat ada yang berbeda pada kata-kata yang diberi tanda bintang (*)?</p>
+                        <p>Ya, betul. Huruf awal kata dasar tidak ditemukan setelah kata itu diberi imbuhan. Huruf /s/ pada "siram" tidak ditemukan pada kata "menyiram". Begitu pula huruf /p/, huruf /k/, dan /t/. Huruf-huruf ini luluh jika ditambah awalan 'me-'.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz -->
+        <div id="quiz" class="hidden card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-700">Quiz Bahasa Indonesia</h2>
+                <div>
+                    <span id="quizTimer" class="bg-orange-100 text-orange-800 font-bold py-2 px-4 rounded-full mr-2">10:00</span>
+                    <button onclick="confirmExitQuiz()" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
+                        Keluar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <span class="font-bold">Nama:</span> <span id="quizNamaSiswa"></span>
+                    </div>
+                    <div>
+                        <span class="font-bold">Sekolah:</span> <span id="quizNamaSekolah"></span>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                    <div id="quizProgress" class="bg-orange-500 h-4 rounded-full progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span>Soal: <span id="currentQuestionNumber">0</span>/<span id="totalQuestions">10</span></span>
+                    <span>Skor: <span id="currentScore">0</span></span>
+                </div>
+            </div>
+            
+            <div id="questionContainer" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 id="questionText" class="text-lg font-bold mb-4"></h3>
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Options will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="flex justify-between">
+                <button id="btnPrevQuestion" class="btn-secondary text-white font-bold py-2 px-6 rounded-full opacity-50 cursor-not-allowed" disabled>
+                    Sebelumnya
+                </button>
+                <button id="btnNextQuestion" class="btn-primary text-white font-bold py-2 px-6 rounded-full">
+                    Selanjutnya
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Result -->
+        <div id="quizResult" class="hidden card p-6 text-center">
+            <h2 class="text-2xl font-bold mb-4 text-blue-700">Hasil Quiz</h2>
+            
+            <div class="mb-6">
+                <div id="confettiContainer" class="relative w-full h-40">
+                    <!-- Confetti will be added here -->
+                </div>
+                <div class="text-6xl mb-4">🎉</div>
+                <h3 class="text-xl font-bold mb-2">Selamat <span id="resultNamaSiswa"></span>!</h3>
+                <p class="mb-4">Kamu telah menyelesaikan quiz Bahasa Indonesia</p>
+                <div class="bg-white p-4 rounded-lg shadow-md inline-block">
+                    <div class="text-4xl font-bold text-orange-600 mb-2"><span id="resultScore">0</span>/<span id="resultTotalQuestions">10</span></div>
+                    <div class="text-lg">Nilai: <span id="resultPercentage">0%</span></div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <canvas id="resultChart" width="400" height="200"></canvas>
+            </div>
+            
+            <div class="flex justify-center space-x-4">
+                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-6 rounded-full">
+                    Kembali ke Menu
+                </button>
+                <button onclick="showQuizReview()" class="btn-primary text-white font-bold py-2 px-6 rounded-full">
+                    Lihat Review
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Review -->
+        <div id="quizReview" class="hidden card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-700">Review Quiz</h2>
+                <button onclick="showSection('quizResult')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
+                    Kembali
+                </button>
+            </div>
+            
+            <div id="reviewContainer" class="space-y-6">
+                <!-- Review items will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Peringkat -->
+        <div id="peringkat" class="hidden card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-700">Peringkat</h2>
+                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
+                    Kembali ke Menu
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex justify-center space-x-4 mb-8">
+                    <div class="text-center">
+                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+                            <span id="rank2Name" class="font-bold">-</span>
+                        </div>
+                        <div class="bg-gray-100 h-24 w-20 flex items-end justify-center rounded-t-lg">
+                            <div class="bg-silver h-20 w-full flex items-center justify-center rounded-t-lg">
+                                <span class="text-2xl">🥈</span>
+                            </div>
+                        </div>
+                        <div class="font-bold">2</div>
+                        <div id="rank2Score" class="text-sm">-</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+                            <span id="rank1Name" class="font-bold">-</span>
+                        </div>
+                        <div class="bg-gray-100 h-32 w-20 flex items-end justify-center rounded-t-lg">
+                            <div class="bg-gold h-28 w-full flex items-center justify-center rounded-t-lg">
+                                <span class="text-2xl">🥇</span>
+                            </div>
+                        </div>
+                        <div class="font-bold">1</div>
+                        <div id="rank1Score" class="text-sm">-</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+                            <span id="rank3Name" class="font-bold">-</span>
+                        </div>
+                        <div class="bg-gray-100 h-16 w-20 flex items-end justify-center rounded-t-lg">
+                            <div class="bg-bronze h-12 w-full flex items-center justify-center rounded-t-lg">
+                                <span class="text-2xl">🥉</span>
+                            </div>
+                        </div>
+                        <div class="font-bold">3</div>
+                        <div id="rank3Score" class="text-sm">-</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-orange-100">
+                                <th class="border border-orange-300 p-2">Peringkat</th>
+                                <th class="border border-orange-300 p-2">Nama</th>
+                                <th class="border border-orange-300 p-2">Sekolah</th>
+                                <th class="border border-orange-300 p-2">Nilai</th>
+                                <th class="border border-orange-300 p-2">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="peringkatTableBody">
+                            <!-- Peringkat data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rekap -->
+        <div id="rekap" class="hidden card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-700">Rekap Nilai</h2>
+                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
+                    Kembali ke Menu
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="filterSekolah">
+                            Filter Sekolah
+                        </label>
+                        <select id="filterSekolah" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Semua Sekolah</option>
+                            <!-- School options will be inserted here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="sortBy">
+                            Urutkan
+                        </label>
+                        <select id="sortBy" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="nilai-desc">Nilai (Tertinggi)</option>
+                            <option value="nilai-asc">Nilai (Terendah)</option>
+                            <option value="nama-asc">Nama (A-Z)</option>
+                            <option value="nama-desc">Nama (Z-A)</option>
+                            <option value="waktu-desc">Waktu (Terbaru)</option>
+                            <option value="waktu-asc">Waktu (Terlama)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="exportToExcel()" class="btn-primary text-white font-bold py-2 px-4 rounded-full">
+                            Export Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-orange-100">
+                                <th class="border border-orange-300 p-2">No</th>
+                                <th class="border border-orange-300 p-2">Nama</th>
+                                <th class="border border-orange-300 p-2">Sekolah</th>
+                                <th class="border border-orange-300 p-2">Nilai</th>
+                                <th class="border border-orange-300 p-2">Tanggal</th>
+                                <th class="border border-orange-300 p-2">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rekapTableBody">
+                            <!-- Rekap data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Statistik Nilai</h3>
+                    <canvas id="nilaiChart" width="400" height="200"></canvas>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Perbandingan Sekolah</h3>
+                    <canvas id="sekolahChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let quizData = [];
+        let currentQuiz = {
+            questions: [],
+            answers: [],
+            currentQuestionIndex: 0,
+            score: 0,
+            startTime: null,
+            endTime: null,
+            timeSpent: 0
+        };
+        let resultsData = [];
+        let timerInterval;
+        
+        // Generate quiz questions
+        const generateQuizQuestions = () => {
+            const allQuestions = [
+                {
+                    question: "Apa arti kata 'keran'?",
+                    options: [
+                        "Tempat keluar air yang bisa dibuka dan ditutup",
+                        "Alat untuk mengukur tekanan air",
+                        "Pipa saluran air",
+                        "Wadah penampung air"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Apa arti kata 'membuntuti'?",
+                    options: [
+                        "Memotong",
+                        "Mengikuti",
+                        "Mengganggu",
+                        "Menyentuh"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Apa arti kata 'sukulen'?",
+                    options: [
+                        "Jenis bunga yang harum",
+                        "Tanaman yang membutuhkan banyak air",
+                        "Sejenis tanaman berdaun tebal",
+                        "Tanaman yang tumbuh di air"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Apa arti kata 'kabur' dalam kalimat 'Molen segera kabur masuk rumah'?",
+                    options: [
+                        "Tidak jelas terlihat",
+                        "Berlari cepat-cepat",
+                        "Bersembunyi",
+                        "Menghilang"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Apa arti kata 'kabur' dalam kalimat 'Semua tampak kabur bagi Ruli'?",
+                    options: [
+                        "Tidak jelas terlihat",
+                        "Berlari cepat-cepat",
+                        "Bersembunyi",
+                        "Menghilang"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Apa arti kata 'gerimis'?",
+                    options: [
+                        "Hujan deras",
+                        "Hujan rintik-rintik",
+                        "Hujan es",
+                        "Hujan badai"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Apa arti kata 'inang'?",
+                    options: [
+                        "Panggilan untuk ayah dalam bahasa Batak",
+                        "Panggilan untuk ibu dalam bahasa Batak",
+                        "Panggilan untuk anak dalam bahasa Batak",
+                        "Panggilan untuk kakek dalam bahasa Batak"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Apa arti kata 'sistematis'?",
+                    options: [
+                        "Dengan cara yang teratur",
+                        "Dengan cara yang rumit",
+                        "Dengan cara yang cepat",
+                        "Dengan cara yang lambat"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Apa arti kata 'marga'?",
+                    options: [
+                        "Nama keluarga",
+                        "Kelompok kekerabatan",
+                        "Tempat tinggal",
+                        "Jabatan dalam adat"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Siapakah 'Molen' dalam materi yang dipelajari?",
+                    options: [
+                        "Nama kucing Tigor",
+                        "Nama anjing Tigor",
+                        "Nama teman Tigor",
+                        "Nama adik Tigor"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Apa yang dimaksud dengan homonim?",
+                    options: [
+                        "Kata yang sama artinya",
+                        "Kata yang berlawanan artinya",
+                        "Kata yang sama lafal dan ejaannya, tetapi berbeda maknanya",
+                        "Kata yang sama maknanya, tetapi berbeda lafal dan ejaannya"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Manakah yang merupakan contoh homonim?",
+                    options: [
+                        "Makan - Minum",
+                        "Besar - Kecil",
+                        "Bisa (racun) - Bisa (mampu)",
+                        "Cantik - Indah"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Awalan 'me-' akan berubah menjadi 'mem-' jika bertemu dengan kata dasar yang berawalan huruf?",
+                    options: [
+                        "l, m, n, r",
+                        "b, f, p, v",
+                        "c, d, j, t",
+                        "a, e, g, h"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Awalan 'me-' akan berubah menjadi 'meng-' jika bertemu dengan kata dasar yang berawalan huruf?",
+                    options: [
+                        "l, m, n, r",
+                        "b, f, p, v",
+                        "c, d, j, t",
+                        "a, e, g, h, i, k, o, u"
+                    ],
+                    answer: 3
+                },
+                {
+                    question: "Awalan 'me-' akan berubah menjadi 'meny-' jika bertemu dengan kata dasar yang berawalan huruf?",
+                    options: [
+                        "s",
+                        "c",
+                        "p",
+                        "t"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Awalan 'me-' akan berubah menjadi 'menge-' jika bertemu dengan kata dasar yang?",
+                    options: [
+                        "Berawalan huruf vokal",
+                        "Berawalan huruf konsonan",
+                        "Bersuku kata satu",
+                        "Bersuku kata dua"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Huruf apa saja yang luluh jika ditambah awalan 'me-'?",
+                    options: [
+                        "s, p, k, t",
+                        "b, f, v",
+                        "l, m, n, r",
+                        "a, i, u, e, o"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Bentuk kata berimbuhan yang benar dari kata dasar 'tulis' adalah?",
+                    options: [
+                        "metulis",
+                        "menulis",
+                        "mentulis",
+                        "mentuliskan"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Bentuk kata berimbuhan yang benar dari kata dasar 'sapu' adalah?",
+                    options: [
+                        "mesapu",
+                        "mensapu",
+                        "menyapu",
+                        "mengsapu"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Bentuk kata berimbuhan yang benar dari kata dasar 'kupas' adalah?",
+                    options: [
+                        "mekupas",
+                        "mengkupas",
+                        "mengupas",
+                        "menkupas"
+                    ],
+                    answer: 2
+                }
+            ];
+            
+            // Shuffle all questions
+            const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
+            
+            // Take only 10 questions
+            const selectedQuestions = shuffledQuestions.slice(0, 10);
+            
+            // Shuffle options for each question
+            return selectedQuestions.map(q => {
+                const options = [...q.options];
+                const correctAnswer = options[q.answer];
+                const shuffledOptions = options.sort(() => Math.random() - 0.5);
+                const newAnswer = shuffledOptions.indexOf(correctAnswer);
+                
+                return {
+                    question: q.question,
+                    options: shuffledOptions,
+                    answer: newAnswer
+                };
+            });
+        };
+        
+        // Initialize the application
+        const init = () => {
+            // Load data from localStorage if available
+            loadData();
+            
+            // Set up event listeners
+            document.getElementById('btnMulai').addEventListener('click', () => showSection('menuUtama'));
+            document.getElementById('btnMulaiQuiz').addEventListener('click', startQuiz);
+            document.getElementById('btnNextQuestion').addEventListener('click', nextQuestion);
+            document.getElementById('btnPrevQuestion').addEventListener('click', prevQuestion);
+            document.getElementById('filterSekolah').addEventListener('change', updateRekapTable);
+            document.getElementById('sortBy').addEventListener('change', updateRekapTable);
+        };
+        
+        // Load data from localStorage
+        const loadData = () => {
+            const savedResults = localStorage.getItem('quizResults');
+            if (savedResults) {
+                resultsData = JSON.parse(savedResults);
+                updateFilterOptions();
+                updateRekapTable();
+                updatePeringkatTable();
+            }
+        };
+        
+        // Save data to localStorage
+        const saveData = () => {
+            localStorage.setItem('quizResults', JSON.stringify(resultsData));
+        };
+        
+        // Show a specific section
+        const showSection = (sectionId) => {
+            // Hide all sections
+            const sections = ['beranda', 'menuUtama', 'materi', 'quizForm', 'quiz', 'quizResult', 'quizReview', 'peringkat', 'rekap'];
+            sections.forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+            
+            // Show the requested section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Additional actions for specific sections
+            if (sectionId === 'peringkat') {
+                updatePeringkatTable();
+            } else if (sectionId === 'rekap') {
+                updateRekapTable();
+                updateCharts();
+            }
+        };
+        
+        // Show quiz form
+        const showQuizForm = () => {
+            document.getElementById('namaSekolah').value = '';
+            document.getElementById('namaSiswa').value = '';
+            showSection('quizForm');
+        };
+        
+        // Start the quiz
+        const startQuiz = () => {
+            const namaSekolah = document.getElementById('namaSekolah').value.trim();
+            const namaSiswa = document.getElementById('namaSiswa').value.trim();
+            
+            if (!namaSekolah || !namaSiswa) {
+                alert('Silakan isi nama sekolah dan nama siswa terlebih dahulu!');
+                return;
+            }
+            
+            // Generate quiz questions
+            currentQuiz = {
+                questions: generateQuizQuestions(),
+                answers: Array(10).fill(null),
+                currentQuestionIndex: 0,
+                score: 0,
+                startTime: new Date(),
+                endTime: null,
+                timeSpent: 0,
+                namaSekolah: namaSekolah,
+                namaSiswa: namaSiswa
+            };
+            
+            // Display quiz information
+            document.getElementById('quizNamaSekolah').textContent = namaSekolah;
+            document.getElementById('quizNamaSiswa').textContent = namaSiswa;
+            document.getElementById('totalQuestions').textContent = currentQuiz.questions.length;
+            
+            // Show the first question
+            showQuestion(0);
+            
+            // Start the timer
+            startTimer();
+            
+            // Show the quiz section
+            showSection('quiz');
+        };
+        
+        // Show a specific question
+        const showQuestion = (index) => {
+            const question = currentQuiz.questions[index];
+            const questionContainer = document.getElementById('questionContainer');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const currentQuestionNumber = document.getElementById('currentQuestionNumber');
+            const quizProgress = document.getElementById('quizProgress');
+            
+            // Update question number and progress
+            currentQuestionNumber.textContent = index + 1;
+            quizProgress.style.width = `${((index + 1) / currentQuiz.questions.length) * 100}%`;
+            
+            // Update question text
+            questionText.textContent = `${index + 1}. ${question.question}`;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Add options
+            question.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option p-3 border rounded-lg cursor-pointer';
+                if (currentQuiz.answers[index] === optionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-orange-500 flex items-center justify-center mr-3">
+                            <span>${String.fromCharCode(65 + optionIndex)}</span>
+                        </div>
+                        <span>${option}</span>
+                    </div>
+                `;
+                
+                optionElement.addEventListener('click', () => selectOption(optionIndex));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('btnPrevQuestion').disabled = index === 0;
+            document.getElementById('btnPrevQuestion').classList.toggle('opacity-50', index === 0);
+            document.getElementById('btnPrevQuestion').classList.toggle('cursor-not-allowed', index === 0);
+            
+            const isLastQuestion = index === currentQuiz.questions.length - 1;
+            document.getElementById('btnNextQuestion').textContent = isLastQuestion ? 'Selesai' : 'Selanjutnya';
+        };
+        
+        // Select an option
+        const selectOption = (optionIndex) => {
+            const currentIndex = currentQuiz.currentQuestionIndex;
+            currentQuiz.answers[currentIndex] = optionIndex;
+            
+            // Update option styling
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach((option, index) => {
+                option.classList.toggle('selected', index === optionIndex);
+            });
+        };
+        
+        // Go to the next question
+        const nextQuestion = () => {
+            const currentIndex = currentQuiz.currentQuestionIndex;
+            const isLastQuestion = currentIndex === currentQuiz.questions.length - 1;
+            
+            if (isLastQuestion) {
+                finishQuiz();
+            } else {
+                currentQuiz.currentQuestionIndex++;
+                showQuestion(currentQuiz.currentQuestionIndex);
+            }
+        };
+        
+        // Go to the previous question
+        const prevQuestion = () => {
+            if (currentQuiz.currentQuestionIndex > 0) {
+                currentQuiz.currentQuestionIndex--;
+                showQuestion(currentQuiz.currentQuestionIndex);
+            }
+        };
+        
+        // Start the quiz timer
+        const startTimer = () => {
+            const timerElement = document.getElementById('quizTimer');
+            let timeLeft = 10 * 60; // 10 minutes in seconds
+            
+            const updateTimer = () => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+                
+                timeLeft--;
+            };
+            
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        };
+        
+        // Finish the quiz
+        const finishQuiz = () => {
+            // Stop the timer
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            currentQuiz.endTime = new Date();
+            currentQuiz.timeSpent = Math.floor((currentQuiz.endTime - currentQuiz.startTime) / 1000); // in seconds
+            
+            let correctAnswers = 0;
+            currentQuiz.questions.forEach((question, index) => {
+                if (currentQuiz.answers[index] === question.answer) {
+                    correctAnswers++;
+                }
+            });
+            
+            currentQuiz.score = correctAnswers;
+            
+            // Save result
+            const result = {
+                namaSiswa: currentQuiz.namaSiswa,
+                namaSekolah: currentQuiz.namaSekolah,
+                score: currentQuiz.score,
+                totalQuestions: currentQuiz.questions.length,
+                timeSpent: currentQuiz.timeSpent,
+                date: new Date().toISOString(),
+                answers: currentQuiz.answers,
+                questions: currentQuiz.questions
+            };
+            
+            resultsData.push(result);
+            saveData();
+            
+            // Show result
+            showQuizResult(result);
+        };
+        
+        // Show quiz result
+        const showQuizResult = (result) => {
+            document.getElementById('resultNamaSiswa').textContent = result.namaSiswa;
+            document.getElementById('resultScore').textContent = result.score;
+            document.getElementById('resultTotalQuestions').textContent = result.totalQuestions;
+            document.getElementById('resultPercentage').textContent = `${Math.round((result.score / result.totalQuestions) * 100)}%`;
+            
+            // Create chart
+            const ctx = document.getElementById('resultChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Benar', 'Salah'],
+                    datasets: [{
+                        data: [result.score, result.totalQuestions - result.score],
+                        backgroundColor: ['#4CAF50', '#FF5252'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Hasil Jawaban'
+                        }
+                    }
+                }
+            });
+            
+            // Create confetti effect
+            createConfetti();
+            
+            // Show result section
+            showSection('quizResult');
+        };
+        
+        // Create confetti effect
+        const createConfetti = () => {
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = '';
+            
+            const colors = ['#f2d74e', '#95c3de', '#ff9a9a', '#a9cf54', '#9e7eb9'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = `${Math.random() * 10 + 5}px`;
+                confetti.style.opacity = '0';
+                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+                confetti.style.animationDelay = `${Math.random() * 2}s`;
+                
+                container.appendChild(confetti);
+            }
+        };
+        
+        // Show quiz review
+        const showQuizReview = () => {
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviewContainer.innerHTML = '';
+            
+            const latestResult = resultsData[resultsData.length - 1];
+            
+            latestResult.questions.forEach((question, index) => {
+                const userAnswer = latestResult.answers[index];
+                const correctAnswer = question.answer;
+                const isCorrect = userAnswer === correctAnswer;
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'bg-white p-4 rounded-lg shadow';
+                
+                reviewItem.innerHTML = `
+                    <h3 class="font-bold mb-2">${index + 1}. ${question.question}</h3>
+                    <div class="space-y-2">
+                        ${question.options.map((option, optionIndex) => `
+                            <div class="p-2 rounded ${optionIndex === userAnswer && isCorrect ? 'bg-green-100 border border-green-500' : 
+                                optionIndex === userAnswer && !isCorrect ? 'bg-red-100 border border-red-500' : 
+                                optionIndex === correctAnswer && !isCorrect ? 'bg-green-50 border border-green-300' : ''}">
+                                <div class="flex items-center">
+                                    <div class="w-6 h-6 rounded-full border-2 ${optionIndex === correctAnswer ? 'border-green-500' : 'border-gray-300'} flex items-center justify-center mr-3">
+                                        <span>${String.fromCharCode(65 + optionIndex)}</span>
+                                    </div>
+                                    <span>${option}</span>
+                                    ${optionIndex === userAnswer && isCorrect ? '<span class="ml-auto text-green-500">✓</span>' : 
+                                    optionIndex === userAnswer && !isCorrect ? '<span class="ml-auto text-red-500">✗</span>' : 
+                                    optionIndex === correctAnswer && !isCorrect ? '<span class="ml-auto text-green-500">(Jawaban benar)</span>' : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                reviewContainer.appendChild(reviewItem);
+            });
+            
+            showSection('quizReview');
+        };
+        
+        // Update peringkat table
+        const updatePeringkatTable = () => {
+            const tableBody = document.getElementById('peringkatTableBody');
+            tableBody.innerHTML = '';
+            
+            // Sort results by score (descending) and time spent (ascending)
+            const sortedResults = [...resultsData].sort((a, b) => {
+                if (b.score !== a.score) {
+                    return b.score - a.score;
+                }
+                return a.timeSpent - b.timeSpent;
+            });
+            
+            // Update top 3 ranks
+            for (let i = 0; i < 3; i++) {
+                if (sortedResults[i]) {
+                    document.getElementById(`rank${i+1}Name`).textContent = sortedResults[i].namaSiswa.split(' ')[0];
+                    document.getElementById(`rank${i+1}Score`).textContent = `${sortedResults[i].score}/${sortedResults[i].totalQuestions}`;
+                }
+            }
+            
+            // Populate table
+            sortedResults.forEach((result, index) => {
+                const row = document.createElement('tr');
+                
+                const minutes = Math.floor(result.timeSpent / 60);
+                const seconds = result.timeSpent % 60;
+                const timeFormatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                row.innerHTML = `
+                    <td class="border border-orange-300 p-2 text-center">${index + 1}</td>
+                    <td class="border border-orange-300 p-2">${result.namaSiswa}</td>
+                    <td class="border border-orange-300 p-2">${result.namaSekolah}</td>
+                    <td class="border border-orange-300 p-2 text-center">${result.score}/${result.totalQuestions} (${Math.round((result.score / result.totalQuestions) * 100)}%)</td>
+                    <td class="border border-orange-300 p-2 text-center">${timeFormatted}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        };
+        
+        // Update filter options
+        const updateFilterOptions = () => {
+            const filterSekolah = document.getElementById('filterSekolah');
+            
+            // Get unique schools
+            const schools = [...new Set(resultsData.map(result => result.namaSekolah))];
+            
+            // Clear previous options except the first one
+            while (filterSekolah.options.length > 1) {
+                filterSekolah.remove(1);
+            }
+            
+            // Add school options
+            schools.forEach(school => {
+                const option = document.createElement('option');
+                option.value = school;
+                option.textContent = school;
+                filterSekolah.appendChild(option);
+            });
+        };
+        
+        // Update rekap table
+        const updateRekapTable = () => {
+            const tableBody = document.getElementById('rekapTableBody');
+            const filterSekolah = document.getElementById('filterSekolah').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            // Filter results
+            let filteredResults = [...resultsData];
+            if (filterSekolah) {
+                filteredResults = filteredResults.filter(result => result.namaSekolah === filterSekolah);
+            }
+            
+            // Sort results
+            switch (sortBy) {
+                case 'nilai-desc':
+                    filteredResults.sort((a, b) => b.score - a.score);
+                    break;
+                case 'nilai-asc':
+                    filteredResults.sort((a, b) => a.score - b.score);
+                    break;
+                case 'nama-asc':
+                    filteredResults.sort((a, b) => a.namaSiswa.localeCompare(b.namaSiswa));
+                    break;
+                case 'nama-desc':
+                    filteredResults.sort((a, b) => b.namaSiswa.localeCompare(a.namaSiswa));
+                    break;
+                case 'waktu-desc':
+                    filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'waktu-asc':
+                    filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+            }
+            
+            // Clear table
+            tableBody.innerHTML = '';
+            
+            // Populate table
+            filteredResults.forEach((result, index) => {
+                const row = document.createElement('tr');
+                
+                const date = new Date(result.date);
+                const dateFormatted = date.toLocaleDateString('id-ID');
+                const timeFormatted = date.toLocaleTimeString('id-ID');
+                
+                row.innerHTML = `
+                    <td class="border border-orange-300 p-2 text-center">${index + 1}</td>
+                    <td class="border border-orange-300 p-2">${result.namaSiswa}</td>
+                    <td class="border border-orange-300 p-2">${result.namaSekolah}</td>
+                    <td class="border border-orange-300 p-2 text-center">${result.score}/${result.totalQuestions} (${Math.round((result.score / result.totalQuestions) * 100)}%)</td>
+                    <td class="border border-orange-300 p-2 text-center">${dateFormatted}</td>
+                    <td class="border border-orange-300 p-2 text-center">${timeFormatted}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Update charts
+            updateCharts();
+        };
+        
+        // Update charts
+        const updateCharts = () => {
+            const filterSekolah = document.getElementById('filterSekolah').value;
+            
+            // Filter results
+            let filteredResults = [...resultsData];
+            if (filterSekolah) {
+                filteredResults = filteredResults.filter(result => result.namaSekolah === filterSekolah);
+            }
+            
+            // Nilai chart
+            const nilaiCtx = document.getElementById('nilaiChart').getContext('2d');
+            const nilaiData = [0, 0, 0, 0, 0]; // 0-20, 21-40, 41-60, 61-80, 81-100
+            
+            filteredResults.forEach(result => {
+                const percentage = Math.round((result.score / result.totalQuestions) * 100);
+                const index = Math.min(Math.floor(percentage / 20), 4);
+                nilaiData[index]++;
+            });
+            
+            if (window.nilaiChart) {
+                window.nilaiChart.destroy();
+            }
+            
+            window.nilaiChart = new Chart(nilaiCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                    datasets: [{
+                        label: 'Jumlah Siswa',
+                        data: nilaiData,
+                        backgroundColor: [
+                            '#FF5252',
+                            '#FF9800',
+                            '#FFC107',
+                            '#8BC34A',
+                            '#4CAF50'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Nilai'
+                        }
+                    }
+                }
+            });
+            
+            // Sekolah chart
+            const sekolahCtx = document.getElementById('sekolahChart').getContext('2d');
+            
+            // Get average score by school
+            const schoolData = {};
+            resultsData.forEach(result => {
+                const school = result.namaSekolah;
+                if (!schoolData[school]) {
+                    schoolData[school] = {
+                        total: 0,
+                        count: 0
+                    };
+                }
+                schoolData[school].total += (result.score / result.totalQuestions) * 100;
+                schoolData[school].count++;
+            });
+            
+            const schoolLabels = [];
+            const schoolAverages = [];
+            
+            for (const school in schoolData) {
+                schoolLabels.push(school);
+                schoolAverages.push(Math.round(schoolData[school].total / schoolData[school].count));
+            }
+            
+            if (window.sekolahChart) {
+                window.sekolahChart.destroy();
+            }
+            
+            window.sekolahChart = new Chart(sekolahCtx, {
+                type: 'pie',
+                data: {
+                    labels: schoolLabels,
+                    datasets: [{
+                        data: schoolAverages,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF9F40'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Rata-rata Nilai per Sekolah'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        
+        // Export data to Excel
+        const exportToExcel = () => {
+            const filterSekolah = document.getElementById('filterSekolah').value;
+            
+            // Filter results
+            let filteredResults = [...resultsData];
+            if (filterSekolah) {
+                filteredResults = filteredResults.filter(result => result.namaSekolah === filterSekolah);
+            }
+            
+            // Prepare data
+            const data = filteredResults.map((result, index) => {
+                const date = new Date(result.date);
+                return {
+                    'No': index + 1,
+                    'Nama Siswa': result.namaSiswa,
+                    'Nama Sekolah': result.namaSekolah,
+                    'Nilai': `${result.score}/${result.totalQuestions}`,
+                    'Persentase': `${Math.round((result.score / result.totalQuestions) * 100)}%`,
+                    'Tanggal': date.toLocaleDateString('id-ID'),
+                    'Waktu': date.toLocaleTimeString('id-ID')
+                };
+            });
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(data);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Rekap Nilai');
+            
+            // Generate Excel file
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            
+            // Convert to blob
+            const s2ab = s => {
+                const buf = new ArrayBuffer(s.length);
+                const view = new Uint8Array(buf);
+                for (let i = 0; i < s.length; i++) {
+                    view[i] = s.charCodeAt(i) & 0xFF;
+                }
+                return buf;
+            };
+            
+            // Save file
+            const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+            saveAs(blob, 'Rekap_Nilai_Bahasa_Indonesia.xlsx');
+        };
+        
+        // Confirm exit quiz
+        const confirmExitQuiz = () => {
+            if (confirm('Apakah Anda yakin ingin keluar dari quiz? Progres Anda akan hilang.')) {
+                clearInterval(timerInterval);
+                showSection('menuUtama');
+            }
+        };
+        
+        // Initialize the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968efbf0605d40cc',t:'MTc1NDE1MjQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
