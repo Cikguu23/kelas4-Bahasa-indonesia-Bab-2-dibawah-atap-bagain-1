@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Pembelajaran Bahasa Indonesia</title>
+    <title>Media Pembelajaran Bahasa Indonesia Kelas 4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/file-saver/dist/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
         
@@ -18,974 +18,1218 @@
             min-height: 100vh;
         }
         
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
         .card {
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #FF8C00, #FF4500);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
             transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
         
-        .btn-secondary {
-            background: linear-gradient(135deg, #4682B4, #1E90FF);
+        .btn {
             transition: all 0.3s ease;
+            border-radius: 12px;
+            font-weight: 700;
         }
         
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(30, 144, 255, 0.4);
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .menu-item {
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .menu-item:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
         }
         
-        .animated-icon {
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+        .menu-item.active {
+            border-bottom: 4px solid #FF6B6B;
+            color: #FF6B6B;
         }
         
         .quiz-option {
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid #ddd;
         }
         
-        .quiz-option:hover:not(.selected) {
-            background-color: #f0f0f0;
-            transform: translateX(5px);
+        .quiz-option:hover {
+            border-color: #FF6B6B;
+            background-color: #FFF0F0;
         }
         
         .quiz-option.selected {
-            background-color: #FFD700;
-            border-color: #FF8C00;
+            border-color: #FF6B6B;
+            background-color: #FF6B6B;
+            color: white;
         }
         
         .quiz-option.correct {
-            background-color: #90EE90;
-            border-color: #32CD32;
+            border-color: #4CAF50;
+            background-color: #4CAF50;
+            color: white;
         }
         
         .quiz-option.incorrect {
-            background-color: #FFA07A;
-            border-color: #FF6347;
+            border-color: #FF5252;
+            background-color: #FF5252;
+            color: white;
         }
         
-        .progress-bar {
-            transition: width 0.5s ease;
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .pagination-btn {
+            padding: 8px 16px;
+            margin: 0 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+        
+        .pagination-btn.active {
+            background-color: #FF6B6B;
+            color: white;
+            border-color: #FF6B6B;
         }
         
         .confetti {
             position: absolute;
             width: 10px;
             height: 10px;
-            background-color: #f2d74e;
-            opacity: 0;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: fall 3s ease-in infinite;
         }
         
-        @keyframes confetti-fall {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0; }
-        }
-        
-        .table-container {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .table-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .table-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .table-container::-webkit-scrollbar-thumb {
-            background: #FF8C00;
-            border-radius: 10px;
-        }
-        
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: #FF4500;
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
         }
     </style>
 </head>
-<body class="p-4">
-    <div id="app" class="max-w-6xl mx-auto">
-        <!-- Beranda -->
-        <div id="beranda" class="card p-8 text-center">
-            <h1 class="text-4xl font-bold mb-4 text-orange-600">Media Pembelajaran Interaktif</h1>
-            <h2 class="text-3xl font-bold mb-6 text-blue-700">Bahasa Indonesia</h2>
-            <div class="flex justify-center mb-8">
-                <div class="w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center animated-icon">
-                    <span class="text-6xl">📚</span>
+<body class="text-gray-800">
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white bg-opacity-90 shadow-md py-4 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <div>
+                        <h1 class="text-2xl font-bold text-red-600">Belajar Bahasa Indonesia</h1>
+                        <p class="text-sm text-gray-600">Kelas 4 - Kurikulum Merdeka</p>
+                    </div>
                 </div>
-            </div>
-            <h3 class="text-2xl font-semibold mb-4">Bab 2: Di Bawah Atap</h3>
-            <p class="text-lg mb-8">Kurikulum Merdeka</p>
-            <button id="btnMulai" class="btn-primary text-white font-bold py-4 px-8 rounded-full text-xl">
-                Mulai Belajar
-            </button>
-        </div>
-
-        <!-- Menu Utama -->
-        <div id="menuUtama" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showSection('materi')">
-                    <div class="text-5xl mb-4">📖</div>
-                    <h3 class="text-xl font-bold text-blue-700">Materi</h3>
-                    <p class="text-gray-600">Pelajari materi Bahasa Indonesia</p>
-                </div>
-                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showQuizForm()">
-                    <div class="text-5xl mb-4">❓</div>
-                    <h3 class="text-xl font-bold text-blue-700">Quiz</h3>
-                    <p class="text-gray-600">Uji pemahaman kamu</p>
-                </div>
-                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showSection('peringkat')">
-                    <div class="text-5xl mb-4">🏆</div>
-                    <h3 class="text-xl font-bold text-blue-700">Peringkat</h3>
-                    <p class="text-gray-600">Lihat peringkat terbaik</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card p-6 text-center menu-item cursor-pointer" onclick="showSection('rekap')">
-                    <div class="text-5xl mb-4">📊</div>
-                    <h3 class="text-xl font-bold text-blue-700">Rekap</h3>
-                    <p class="text-gray-600">Lihat rekap nilai siswa</p>
-                </div>
-                <div class="card p-6 text-center menu-item cursor-pointer" onclick="exportToExcel()">
-                    <div class="text-5xl mb-4">📥</div>
-                    <h3 class="text-xl font-bold text-blue-700">Export Excel</h3>
-                    <p class="text-gray-600">Unduh data dalam format Excel</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form Quiz -->
-        <div id="quizForm" class="hidden card p-6">
-            <h2 class="text-2xl font-bold mb-4 text-center text-blue-700">Identitas Peserta</h2>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="namaSekolah">
-                    Nama Sekolah
-                </label>
-                <input id="namaSekolah" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan nama sekolah">
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="namaSiswa">
-                    Nama Siswa
-                </label>
-                <input id="namaSiswa" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan nama siswa">
-            </div>
-            <div class="flex justify-center">
-                <button id="btnMulaiQuiz" class="btn-primary text-white font-bold py-2 px-6 rounded-full">
-                    Mulai Quiz
+                <nav class="hidden md:flex space-x-6">
+                    <div class="menu-item px-3 py-2 font-semibold" data-page="beranda">Beranda</div>
+                    <div class="menu-item px-3 py-2 font-semibold" data-page="materi">Materi</div>
+                    <div class="menu-item px-3 py-2 font-semibold" data-page="quiz">Quiz</div>
+                    <div class="menu-item px-3 py-2 font-semibold" data-page="peringkat">Peringkat</div>
+                    <div class="menu-item px-3 py-2 font-semibold" data-page="rekap">Rekap</div>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
                 </button>
             </div>
-        </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
+                <div class="menu-item px-4 py-2 font-semibold" data-page="beranda">Beranda</div>
+                <div class="menu-item px-4 py-2 font-semibold" data-page="materi">Materi</div>
+                <div class="menu-item px-4 py-2 font-semibold" data-page="quiz">Quiz</div>
+                <div class="menu-item px-4 py-2 font-semibold" data-page="peringkat">Peringkat</div>
+                <div class="menu-item px-4 py-2 font-semibold" data-page="rekap">Rekap</div>
+            </div>
+        </header>
 
-        <!-- Materi -->
-        <div id="materi" class="hidden card p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-blue-700">Materi Bahasa Indonesia</h2>
-                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
-                    Kembali ke Menu
-                </button>
-            </div>
-            
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-4 text-orange-600">A. Kata-kata Baru</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">keran</span>
-                            <span>Tempat keluar air yang bisa dibuka dan ditutup</span>
-                        </div>
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <!-- Beranda Page -->
+            <div id="beranda-page" class="page">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-10 min-h-[80vh]">
+                    <div class="md:w-1/2 text-center md:text-left">
+                        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Selamat Datang di Media Pembelajaran Interaktif</h1>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-yellow-200 mb-4">Bahasa Indonesia Kelas 4</h2>
+                        <p class="text-lg text-white mb-8">Bab 2: Di Bawah Atap - Kata-kata Baru & Kata Bermakna Ganda</p>
+                        <button id="mulai-button" class="btn bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-8 py-4 text-xl rounded-full shadow-lg animate-pulse">
+                            Mulai Belajar
+                        </button>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">membuntuti</span>
-                            <span>Mengikuti</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">mawar</span>
-                            <span>Nama jenis bunga</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">sukulen</span>
-                            <span>Sejenis tanaman berdaun tebal</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">molen</span>
-                            <span>Nama kucing Tigor</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">kepala suku</span>
-                            <span>Orang yang memimpin suku</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">kabur</span>
-                            <span>Berlari cepat-cepat, melarikan diri, juga bisa berarti tidak jelas terlihat</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">gerimis</span>
-                            <span>Hujan rintik-rintik</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">inang</span>
-                            <span>Panggilan untuk ibu dalam bahasa Batak</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">sistematis</span>
-                            <span>Dengan cara yang teratur</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="flex justify-between">
-                            <span class="font-bold text-blue-700">marga</span>
-                            <span>Kelompok kekerabatan</span>
+                    <div class="md:w-1/2">
+                        <div class="card p-6 bg-white bg-opacity-90 rounded-3xl shadow-2xl">
+                            <div class="flex justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-center mb-4">Fitur Pembelajaran</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center p-3 bg-yellow-100 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    <span>Materi Interaktif</span>
+                                </div>
+                                <div class="flex items-center p-3 bg-green-100 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                    </svg>
+                                    <span>Quiz Menarik</span>
+                                </div>
+                                <div class="flex items-center p-3 bg-blue-100 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                    <span>Peringkat Siswa</span>
+                                </div>
+                                <div class="flex items-center p-3 bg-purple-100 rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span>Export Data</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-4 text-orange-600">B. Kata Bermakna Ganda</h3>
-                <div class="bg-white p-4 rounded-lg shadow mb-4">
-                    <p class="mb-2"><em>Kalau tidak memakai kacamata, semua tampak kabur bagi Ruli.</em></p>
-                    <p class="mb-4"><em>Begitu Tigor menyalakan keran, Molen segera kabur masuk rumah.</em></p>
-                    <p class="font-bold mb-2">Samakah arti kata /kabur/ pada kedua kalimat di atas?</p>
-                    <p>Dapat kita lihat bahwa terdapat dua arti kata /kabur/. Di dalam bahasa Indonesia, ada beberapa kata yang memiliki arti lebih dari satu. Kata seperti itu disebut homonim.</p>
-                    <p class="font-bold mt-2">Homonim: kata yang sama lafal dan ejaannya, tetapi berbeda maknanya.</p>
-                </div>
-                
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-orange-100">
-                                <th class="border border-orange-300 p-2">Kata</th>
-                                <th class="border border-orange-300 p-2">Arti 1</th>
-                                <th class="border border-orange-300 p-2">Arti 2</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">Bisa</td>
-                                <td class="border border-orange-300 p-2">Racun</td>
-                                <td class="border border-orange-300 p-2">Dapat/mampu</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">Bulan</td>
-                                <td class="border border-orange-300 p-2">Benda langit</td>
-                                <td class="border border-orange-300 p-2">Satuan waktu (30 hari)</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">Kali</td>
-                                <td class="border border-orange-300 p-2">Sungai</td>
-                                <td class="border border-orange-300 p-2">Perkalian</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">Palu</td>
-                                <td class="border border-orange-300 p-2">Alat pemukul</td>
-                                <td class="border border-orange-300 p-2">Nama kota</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">Rapat</td>
-                                <td class="border border-orange-300 p-2">Pertemuan</td>
-                                <td class="border border-orange-300 p-2">Dekat/tidak renggang</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div>
-                <h3 class="text-xl font-bold mb-4 text-orange-600">C. Awalan 'me-'</h3>
-                <div class="bg-white p-4 rounded-lg shadow mb-4">
-                    <p>Kamu sudah mengenal awalan 'me-' sebagai pembentuk kata kerja. Tergantung kata dasarnya, awalan 'me-' bisa berubah bentuk menjadi 'men-', 'mem-', 'menge-', 'meny-', atau tetap 'me-'.</p>
-                </div>
-                
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-orange-100">
-                                <th class="border border-orange-300 p-2">Awalan 'me-'</th>
-                                <th class="border border-orange-300 p-2">Kata Dasar</th>
-                                <th class="border border-orange-300 p-2">Kata Berimbuhan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold" rowspan="2">me-</td>
-                                <td class="border border-orange-300 p-2">/l/, /m/, /n/, /r/, /w/, /y/<br>lihat, minum, nyanyi, rawat, warna, yakin</td>
-                                <td class="border border-orange-300 p-2">melihat, meminum, menyanyi, merawat, mewarna[i], meyakin[i]</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2">/c/, /d/, /j/, /t*/<br>cuci, dengar, jemput, tulis</td>
-                                <td class="border border-orange-300 p-2">mencuci, mendengar, menjemput, menulis*</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">mem-</td>
-                                <td class="border border-orange-300 p-2">/b/, /f/, /p*/, /v/<br>buka, foto, pegang, program, veto</td>
-                                <td class="border border-orange-300 p-2">membuka, memfoto, memegang*, memprogram, memveto</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">meng-</td>
-                                <td class="border border-orange-300 p-2">/a/, /e/, /g/, /h/, /i/, /k*/, /o/, /u/<br>ayun, ekor, gali, halau, injak, kupas, kristal, obrol, undang</td>
-                                <td class="border border-orange-300 p-2">mengayun, mengekor, menggali, menghalau, menginjak, mengupas*, mengkristal, mengobrol, mengundang</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">menge-</td>
-                                <td class="border border-orange-300 p-2">bersuku kata satu<br>tik, cat, pel</td>
-                                <td class="border border-orange-300 p-2">mengetik, mengecat, mengepel</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-orange-300 p-2 font-bold">meny-</td>
-                                <td class="border border-orange-300 p-2">/s/*<br>siram, sapu</td>
-                                <td class="border border-orange-300 p-2">menyiram*, menyapu*</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+            <!-- Materi Page -->
+            <div id="materi-page" class="page hidden">
+                <div class="card p-8 mb-8">
+                    <h2 class="text-3xl font-bold mb-6 text-red-600">Bahasa Indonesia - Bab 2: Di Bawah Atap</h2>
                     
-                    <div class="mt-4">
-                        <p class="mb-2">Apakah kamu melihat ada yang berbeda pada kata-kata yang diberi tanda bintang (*)?</p>
-                        <p>Ya, betul. Huruf awal kata dasar tidak ditemukan setelah kata itu diberi imbuhan. Huruf /s/ pada "siram" tidak ditemukan pada kata "menyiram". Begitu pula huruf /p/, huruf /k/, dan /t/. Huruf-huruf ini luluh jika ditambah awalan 'me-'.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quiz -->
-        <div id="quiz" class="hidden card p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-blue-700">Quiz Bahasa Indonesia</h2>
-                <div>
-                    <span id="quizTimer" class="bg-orange-100 text-orange-800 font-bold py-2 px-4 rounded-full mr-2">10:00</span>
-                    <button onclick="confirmExitQuiz()" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
-                        Keluar
-                    </button>
-                </div>
-            </div>
-            
-            <div class="mb-4">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <span class="font-bold">Nama:</span> <span id="quizNamaSiswa"></span>
-                    </div>
-                    <div>
-                        <span class="font-bold">Sekolah:</span> <span id="quizNamaSekolah"></span>
-                    </div>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
-                    <div id="quizProgress" class="bg-orange-500 h-4 rounded-full progress-bar" style="width: 0%"></div>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span>Soal: <span id="currentQuestionNumber">0</span>/<span id="totalQuestions">10</span></span>
-                    <span>Skor: <span id="currentScore">0</span></span>
-                </div>
-            </div>
-            
-            <div id="questionContainer" class="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h3 id="questionText" class="text-lg font-bold mb-4"></h3>
-                <div id="optionsContainer" class="space-y-3">
-                    <!-- Options will be inserted here -->
-                </div>
-            </div>
-            
-            <div class="flex justify-between">
-                <button id="btnPrevQuestion" class="btn-secondary text-white font-bold py-2 px-6 rounded-full opacity-50 cursor-not-allowed" disabled>
-                    Sebelumnya
-                </button>
-                <button id="btnNextQuestion" class="btn-primary text-white font-bold py-2 px-6 rounded-full">
-                    Selanjutnya
-                </button>
-            </div>
-        </div>
-
-        <!-- Quiz Result -->
-        <div id="quizResult" class="hidden card p-6 text-center">
-            <h2 class="text-2xl font-bold mb-4 text-blue-700">Hasil Quiz</h2>
-            
-            <div class="mb-6">
-                <div id="confettiContainer" class="relative w-full h-40">
-                    <!-- Confetti will be added here -->
-                </div>
-                <div class="text-6xl mb-4">🎉</div>
-                <h3 class="text-xl font-bold mb-2">Selamat <span id="resultNamaSiswa"></span>!</h3>
-                <p class="mb-4">Kamu telah menyelesaikan quiz Bahasa Indonesia</p>
-                <div class="bg-white p-4 rounded-lg shadow-md inline-block">
-                    <div class="text-4xl font-bold text-orange-600 mb-2"><span id="resultScore">0</span>/<span id="resultTotalQuestions">10</span></div>
-                    <div class="text-lg">Nilai: <span id="resultPercentage">0%</span></div>
-                </div>
-            </div>
-            
-            <div class="mb-6">
-                <canvas id="resultChart" width="400" height="200"></canvas>
-            </div>
-            
-            <div class="flex justify-center space-x-4">
-                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-6 rounded-full">
-                    Kembali ke Menu
-                </button>
-                <button onclick="showQuizReview()" class="btn-primary text-white font-bold py-2 px-6 rounded-full">
-                    Lihat Review
-                </button>
-            </div>
-        </div>
-
-        <!-- Quiz Review -->
-        <div id="quizReview" class="hidden card p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-blue-700">Review Quiz</h2>
-                <button onclick="showSection('quizResult')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
-                    Kembali
-                </button>
-            </div>
-            
-            <div id="reviewContainer" class="space-y-6">
-                <!-- Review items will be inserted here -->
-            </div>
-        </div>
-
-        <!-- Peringkat -->
-        <div id="peringkat" class="hidden card p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-blue-700">Peringkat</h2>
-                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
-                    Kembali ke Menu
-                </button>
-            </div>
-            
-            <div class="mb-6">
-                <div class="flex justify-center space-x-4 mb-8">
-                    <div class="text-center">
-                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
-                            <span id="rank2Name" class="font-bold">-</span>
-                        </div>
-                        <div class="bg-gray-100 h-24 w-20 flex items-end justify-center rounded-t-lg">
-                            <div class="bg-silver h-20 w-full flex items-center justify-center rounded-t-lg">
-                                <span class="text-2xl">🥈</span>
+                    <div class="mb-10">
+                        <h3 class="text-2xl font-bold mb-4 text-blue-600">A. Kata-kata Baru</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-yellow-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-yellow-700">keran</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Tempat keluar air yang bisa dibuka dan ditutup</p>
+                            </div>
+                            
+                            <div class="bg-green-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-green-700">membuntuti</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Mengikuti</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-blue-700">mawar</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Nama jenis bunga</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-purple-700">sukulen</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Sejenis tanaman berdaun tebal</p>
+                            </div>
+                            
+                            <div class="bg-red-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-red-700">molen</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Nama kucing Tigor</p>
+                            </div>
+                            
+                            <div class="bg-indigo-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-indigo-700">kepala suku</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Orang yang memimpin suku</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-yellow-700">kabur</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Berlari cepat-cepat, melarikan diri, juga bisa berarti tidak jelas terlihat</p>
+                            </div>
+                            
+                            <div class="bg-green-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-green-700">gerimis</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Hujan rintik-rintik</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-blue-700">inang</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Panggilan untuk ibu dalam bahasa Batak</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-purple-700">sistematis</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Dengan cara yang teratur</p>
+                            </div>
+                            
+                            <div class="bg-red-50 p-4 rounded-lg shadow">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-lg font-bold text-red-700">marga</span>
+                                    <svg class="w-5 h-5 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                                <p>Kelompok kekerabatan</p>
                             </div>
                         </div>
-                        <div class="font-bold">2</div>
-                        <div id="rank2Score" class="text-sm">-</div>
                     </div>
-                    <div class="text-center">
-                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
-                            <span id="rank1Name" class="font-bold">-</span>
+                    
+                    <div class="mb-10">
+                        <h3 class="text-2xl font-bold mb-4 text-green-600">B. Kata Bermakna Ganda</h3>
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <p class="text-lg mb-4">Kalau tidak memakai kacamata, semua tampak <span class="font-bold text-red-600">kabur</span> bagi Ruli.</p>
+                            <p class="text-lg mb-4">Begitu Tigor menyalakan keran, Molen segera <span class="font-bold text-red-600">kabur</span> masuk rumah.</p>
+                            <p class="text-lg mb-4">Samakah arti kata <span class="font-bold text-red-600">kabur</span> pada kedua kalimat di atas?</p>
+                            <p class="text-lg">Dapat kita lihat bahwa terdapat dua arti kata <span class="font-bold text-red-600">kabur</span>. Di dalam bahasa Indonesia, ada beberapa kata yang memiliki arti lebih dari satu. Kata seperti itu disebut <span class="font-bold text-blue-600">homonim</span>.</p>
                         </div>
-                        <div class="bg-gray-100 h-32 w-20 flex items-end justify-center rounded-t-lg">
-                            <div class="bg-gold h-28 w-full flex items-center justify-center rounded-t-lg">
-                                <span class="text-2xl">🥇</span>
-                            </div>
+                        
+                        <div class="bg-yellow-100 p-6 rounded-lg shadow-md mb-6">
+                            <h4 class="text-xl font-bold mb-3 text-yellow-800">Homonim:</h4>
+                            <p class="text-lg">Kata yang sama lafal dan ejaannya, tetapi berbeda maknanya.</p>
                         </div>
-                        <div class="font-bold">1</div>
-                        <div id="rank1Score" class="text-sm">-</div>
+                        
+                        <div class="overflow-x-auto mb-6">
+                            <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                                <thead class="bg-blue-100">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-lg font-bold text-blue-800">Kata</th>
+                                        <th class="px-6 py-3 text-left text-lg font-bold text-blue-800">Arti 1</th>
+                                        <th class="px-6 py-3 text-left text-lg font-bold text-blue-800">Arti 2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium">Bisa</td>
+                                        <td class="px-6 py-4">Racun</td>
+                                        <td class="px-6 py-4">Dapat/mampu</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-6 py-4 font-medium">Bulan</td>
+                                        <td class="px-6 py-4">Benda langit</td>
+                                        <td class="px-6 py-4">Satuan waktu (30 hari)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium">Kali</td>
+                                        <td class="px-6 py-4">Sungai</td>
+                                        <td class="px-6 py-4">Perkalian</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-6 py-4 font-medium">Palu</td>
+                                        <td class="px-6 py-4">Alat pemukul</td>
+                                        <td class="px-6 py-4">Nama kota</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium">Rapat</td>
+                                        <td class="px-6 py-4">Pertemuan</td>
+                                        <td class="px-6 py-4">Dekat/tidak renggang</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
-                            <span id="rank3Name" class="font-bold">-</span>
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-purple-600">C. Awalan 'me-'</h3>
+                        <p class="text-lg mb-4">Kamu sudah mengenal awalan 'me-' sebagai pembentuk kata kerja. Tergantung kata dasarnya, awalan 'me-' bisa berubah bentuk menjadi 'men-', 'mem-', 'menge-', 'meny-', atau tetap 'me-'.</p>
+                        
+                        <div class="overflow-x-auto mb-6">
+                            <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                                <thead class="bg-purple-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-lg font-bold text-purple-800">Awalan 'me-'</th>
+                                        <th class="px-4 py-3 text-left text-lg font-bold text-purple-800">Kata Dasar</th>
+                                        <th class="px-4 py-3 text-left text-lg font-bold text-purple-800">Kata Berimbuhan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium" rowspan="6">me-</td>
+                                        <td class="px-4 py-3">/l/, /m/, /n/, /r/, /w/, /y/<br>lihat, minum, nyanyi, rawat, warna, yakin</td>
+                                        <td class="px-4 py-3">melihat, meminum, menyanyi, merawat, mewarna[i], meyakin[i]</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3" rowspan="4">men-</td>
+                                        <td class="px-4 py-3">/c/, /d/, /j/, /t*/<br>cuci, dengar, jemput, tulis</td>
+                                        <td class="px-4 py-3">mencuci, mendengar, menjemput, menulis*</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3" rowspan="4">mem-</td>
+                                        <td class="px-4 py-3">/b/, /f/, /p*/, /v/<br>buka, foto, pegang, program, veto</td>
+                                        <td class="px-4 py-3">membuka, memfoto, memegang*, memprogram, memveto</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3" rowspan="4">meng-</td>
+                                        <td class="px-4 py-3">/a/, /e/, /g/, /h/, /i/, /k*/, /o/, /u/<br>ayun, ekor, gali, halau, injak, kupas, kristal, obrol, undang</td>
+                                        <td class="px-4 py-3">mengayun, mengekor, menggali, menghalau, menginjak, mengupas*, mengkristal, mengobrol, mengundang</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3" rowspan="3">menge-</td>
+                                        <td class="px-4 py-3">bersuku kata satu<br>tik, cat, pel</td>
+                                        <td class="px-4 py-3">mengetik, mengecat, mengepel</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3" rowspan="2">meny-</td>
+                                        <td class="px-4 py-3">/s/*<br>siram, sapu</td>
+                                        <td class="px-4 py-3">menyiram*, menyapu*</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="bg-gray-100 h-16 w-20 flex items-end justify-center rounded-t-lg">
-                            <div class="bg-bronze h-12 w-full flex items-center justify-center rounded-t-lg">
-                                <span class="text-2xl">🥉</span>
-                            </div>
+                        
+                        <div class="bg-blue-100 p-6 rounded-lg shadow-md">
+                            <p class="text-lg mb-4">Apakah kamu melihat ada yang berbeda pada kata-kata yang diberi tanda bintang (*)?</p>
+                            <p class="text-lg">Ya, betul. Huruf awal kata dasar tidak ditemukan setelah kata itu diberi imbuhan. Huruf /s/ pada "siram" tidak ditemukan pada kata "menyiram". Begitu pula huruf /p/, huruf /k/, dan /t/. Huruf-huruf ini luluh jika ditambah awalan 'me-'.</p>
                         </div>
-                        <div class="font-bold">3</div>
-                        <div id="rank3Score" class="text-sm">-</div>
                     </div>
-                </div>
-                
-                <div class="table-container">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-orange-100">
-                                <th class="border border-orange-300 p-2">Peringkat</th>
-                                <th class="border border-orange-300 p-2">Nama</th>
-                                <th class="border border-orange-300 p-2">Sekolah</th>
-                                <th class="border border-orange-300 p-2">Nilai</th>
-                                <th class="border border-orange-300 p-2">Waktu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="peringkatTableBody">
-                            <!-- Peringkat data will be inserted here -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
-        </div>
 
-        <!-- Rekap -->
-        <div id="rekap" class="hidden card p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-blue-700">Rekap Nilai</h2>
-                <button onclick="showSection('menuUtama')" class="btn-secondary text-white font-bold py-2 px-4 rounded-full">
-                    Kembali ke Menu
-                </button>
-            </div>
-            
-            <div class="mb-6">
-                <div class="flex flex-wrap gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="filterSekolah">
-                            Filter Sekolah
-                        </label>
-                        <select id="filterSekolah" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <option value="">Semua Sekolah</option>
-                            <!-- School options will be inserted here -->
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="sortBy">
-                            Urutkan
-                        </label>
-                        <select id="sortBy" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <option value="nilai-desc">Nilai (Tertinggi)</option>
-                            <option value="nilai-asc">Nilai (Terendah)</option>
-                            <option value="nama-asc">Nama (A-Z)</option>
-                            <option value="nama-desc">Nama (Z-A)</option>
-                            <option value="waktu-desc">Waktu (Terbaru)</option>
-                            <option value="waktu-asc">Waktu (Terlama)</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="exportToExcel()" class="btn-primary text-white font-bold py-2 px-4 rounded-full">
-                            Export Excel
+            <!-- Quiz Page -->
+            <div id="quiz-page" class="page hidden">
+                <div id="quiz-intro" class="card p-8 mb-8">
+                    <h2 class="text-3xl font-bold mb-6 text-center text-red-600">Quiz Bahasa Indonesia</h2>
+                    <p class="text-lg mb-8 text-center">Sebelum memulai quiz, silakan masukkan data diri kamu:</p>
+                    
+                    <div class="max-w-md mx-auto">
+                        <div class="mb-4">
+                            <label for="nama-sekolah" class="block text-gray-700 font-semibold mb-2">Nama Sekolah:</label>
+                            <input type="text" id="nama-sekolah" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Masukkan nama sekolah">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="nama-siswa" class="block text-gray-700 font-semibold mb-2">Nama Siswa:</label>
+                            <input type="text" id="nama-siswa" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Masukkan nama lengkap">
+                        </div>
+                        
+                        <button id="mulai-quiz-btn" class="w-full btn bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg text-lg font-bold">
+                            Mulai Quiz
                         </button>
                     </div>
                 </div>
                 
-                <div class="table-container">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="bg-orange-100">
-                                <th class="border border-orange-300 p-2">No</th>
-                                <th class="border border-orange-300 p-2">Nama</th>
-                                <th class="border border-orange-300 p-2">Sekolah</th>
-                                <th class="border border-orange-300 p-2">Nilai</th>
-                                <th class="border border-orange-300 p-2">Tanggal</th>
-                                <th class="border border-orange-300 p-2">Waktu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rekapTableBody">
-                            <!-- Rekap data will be inserted here -->
-                        </tbody>
-                    </table>
+                <div id="quiz-container" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Quiz Bahasa Indonesia</h2>
+                            <p class="text-white" id="quiz-user-info"></p>
+                        </div>
+                        <div class="bg-white bg-opacity-90 rounded-lg px-4 py-2">
+                            <span class="font-bold">Soal: </span>
+                            <span id="current-question">1</span>
+                            <span>/</span>
+                            <span id="total-questions">10</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6 mb-6">
+                        <div id="question-container" class="mb-6">
+                            <h3 id="question-text" class="text-xl font-bold mb-4"></h3>
+                            <div id="options-container" class="space-y-3">
+                                <!-- Options will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <button id="prev-btn" class="btn bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-6 rounded-lg font-semibold hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Sebelumnya
+                            </button>
+                            <div></div>
+                            <button id="next-btn" class="btn bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold">
+                                Selanjutnya
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                            <button id="finish-btn" class="btn bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hidden">
+                                Selesai
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container bg-white bg-opacity-30 rounded-full h-4 mb-8">
+                        <div id="progress-bar" class="bg-green-500 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="quiz-result" class="hidden">
+                    <div class="card p-8 text-center">
+                        <div id="confetti-container" class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none"></div>
+                        
+                        <div class="mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        
+                        <h2 class="text-3xl font-bold mb-4">Quiz Selesai!</h2>
+                        <p class="text-lg mb-2" id="result-name"></p>
+                        <p class="text-lg mb-2" id="result-school"></p>
+                        <p class="text-lg mb-6">Nilai kamu: <span id="result-score" class="font-bold text-2xl text-red-600">0</span> dari 100</p>
+                        
+                        <div class="mb-8">
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <div class="flex justify-between mb-2">
+                                    <span>Jawaban Benar:</span>
+                                    <span id="correct-answers" class="font-bold text-green-600">0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Jawaban Salah:</span>
+                                    <span id="wrong-answers" class="font-bold text-red-600">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center space-x-4">
+                            <button id="review-btn" class="btn bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold">
+                                Lihat Jawaban
+                            </button>
+                            <button id="restart-btn" class="btn bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded-lg font-semibold">
+                                Coba Lagi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="quiz-review" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Pembahasan Quiz</h2>
+                        <button id="back-to-result-btn" class="btn bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold">
+                            Kembali ke Hasil
+                        </button>
+                    </div>
+                    
+                    <div id="review-container" class="space-y-6">
+                        <!-- Review items will be inserted here -->
+                    </div>
                 </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Statistik Nilai</h3>
-                    <canvas id="nilaiChart" width="400" height="200"></canvas>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Perbandingan Sekolah</h3>
-                    <canvas id="sekolahChart" width="400" height="200"></canvas>
+
+            <!-- Peringkat Page -->
+            <div id="peringkat-page" class="page hidden">
+                <div class="card p-8">
+                    <h2 class="text-3xl font-bold mb-6 text-center text-red-600">Peringkat Siswa</h2>
+                    
+                    <div class="mb-8">
+                        <div class="flex flex-wrap justify-center gap-6 mb-8">
+                            <div class="relative">
+                                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                    <div class="bg-yellow-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
+                                        <span class="text-xl font-bold">2</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-b from-silver-300 to-silver-100 pt-8 pb-4 px-6 rounded-lg shadow-lg w-64 text-center">
+                                    <div class="w-20 h-20 mx-auto bg-gray-200 rounded-full flex items-center justify-center mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-1" id="rank-2-name">-</h3>
+                                    <p class="text-gray-600 mb-2" id="rank-2-school">-</p>
+                                    <div class="bg-white rounded-full py-1 px-4 inline-block">
+                                        <span class="font-bold text-lg" id="rank-2-score">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="relative -mt-4">
+                                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                                    <div class="bg-yellow-400 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg border-2 border-yellow-200">
+                                        <span class="text-2xl font-bold">1</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-b from-yellow-300 to-yellow-100 pt-10 pb-6 px-8 rounded-lg shadow-lg w-72 text-center">
+                                    <div class="w-24 h-24 mx-auto bg-gray-200 rounded-full flex items-center justify-center mb-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-2xl font-bold mb-1" id="rank-1-name">-</h3>
+                                    <p class="text-gray-600 mb-3" id="rank-1-school">-</p>
+                                    <div class="bg-white rounded-full py-2 px-6 inline-block">
+                                        <span class="font-bold text-xl" id="rank-1-score">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="relative">
+                                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                    <div class="bg-yellow-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
+                                        <span class="text-xl font-bold">3</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-b from-bronze-300 to-bronze-100 pt-8 pb-4 px-6 rounded-lg shadow-lg w-64 text-center">
+                                    <div class="w-20 h-20 mx-auto bg-gray-200 rounded-full flex items-center justify-center mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-1" id="rank-3-name">-</h3>
+                                    <p class="text-gray-600 mb-2" id="rank-3-school">-</p>
+                                    <div class="bg-white rounded-full py-1 px-4 inline-block">
+                                        <span class="font-bold text-lg" id="rank-3-score">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Peringkat</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Nama</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Sekolah</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody id="peringkat-table-body">
+                                <!-- Peringkat data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6 text-center" id="no-data-peringkat">
+                        <p class="text-gray-500 italic">Belum ada data peringkat. Silakan selesaikan quiz terlebih dahulu.</p>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Rekap Page -->
+            <div id="rekap-page" class="page hidden">
+                <div class="card p-8">
+                    <h2 class="text-3xl font-bold mb-6 text-center text-red-600">Rekap Nilai Siswa</h2>
+                    
+                    <div class="mb-6">
+                        <div class="flex flex-wrap gap-4 items-end">
+                            <div>
+                                <label for="filter-sekolah" class="block text-gray-700 font-semibold mb-2">Filter Sekolah:</label>
+                                <select id="filter-sekolah" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    <option value="semua">Semua Sekolah</option>
+                                    <!-- School options will be inserted here -->
+                                </select>
+                            </div>
+                            
+                            <button id="export-excel-btn" class="btn bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-semibold flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-blue-50 p-4 rounded-lg shadow">
+                                <h3 class="text-lg font-semibold text-blue-700 mb-2">Total Siswa</h3>
+                                <p class="text-3xl font-bold" id="total-siswa">0</p>
+                            </div>
+                            
+                            <div class="bg-green-50 p-4 rounded-lg shadow">
+                                <h3 class="text-lg font-semibold text-green-700 mb-2">Rata-rata Nilai</h3>
+                                <p class="text-3xl font-bold" id="rata-nilai">0</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 p-4 rounded-lg shadow">
+                                <h3 class="text-lg font-semibold text-yellow-700 mb-2">Nilai Tertinggi</h3>
+                                <p class="text-3xl font-bold" id="nilai-tertinggi">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Grafik Distribusi Nilai</h3>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <canvas id="nilai-chart" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">No</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Nama</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Sekolah</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Nilai</th>
+                                    <th class="px-6 py-3 text-left text-lg font-bold text-gray-800">Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rekap-table-body">
+                                <!-- Rekap data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6 text-center" id="no-data-rekap">
+                        <p class="text-gray-500 italic">Belum ada data rekap. Silakan selesaikan quiz terlebih dahulu.</p>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-center" id="pagination-container">
+                        <!-- Pagination will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white bg-opacity-90 py-4 px-6 shadow-inner">
+            <div class="container mx-auto text-center">
+                <p class="text-gray-600">© 2023 Media Pembelajaran Interaktif - Bahasa Indonesia Kelas 4</p>
+                <p class="text-gray-500 text-sm">Kurikulum Merdeka</p>
+            </div>
+        </footer>
     </div>
 
     <script>
-        // Data storage
-        let quizData = [];
-        let currentQuiz = {
-            questions: [],
-            answers: [],
-            currentQuestionIndex: 0,
-            score: 0,
-            startTime: null,
-            endTime: null,
-            timeSpent: 0
+        // Data Storage
+        const appData = {
+            currentPage: 'beranda',
+            quizData: {
+                questions: [
+                    {
+                        question: "Apa arti kata 'keran'?",
+                        options: [
+                            "Tempat keluar air yang bisa dibuka dan ditutup",
+                            "Nama kucing Tigor",
+                            "Sejenis tanaman berdaun tebal",
+                            "Hujan rintik-rintik"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Apa arti kata 'membuntuti'?",
+                        options: [
+                            "Berlari cepat-cepat",
+                            "Mengikuti",
+                            "Memimpin suku",
+                            "Dengan cara yang teratur"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Apa arti kata 'mawar'?",
+                        options: [
+                            "Kelompok kekerabatan",
+                            "Panggilan untuk ibu dalam bahasa Batak",
+                            "Nama jenis bunga",
+                            "Nama kucing Tigor"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Apa arti kata 'sukulen'?",
+                        options: [
+                            "Sejenis tanaman berdaun tebal",
+                            "Nama jenis bunga",
+                            "Tempat keluar air",
+                            "Kelompok kekerabatan"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Apa arti kata 'molen'?",
+                        options: [
+                            "Orang yang memimpin suku",
+                            "Hujan rintik-rintik",
+                            "Nama kucing Tigor",
+                            "Panggilan untuk ibu dalam bahasa Batak"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Apa arti kata 'kepala suku'?",
+                        options: [
+                            "Kelompok kekerabatan",
+                            "Orang yang memimpin suku",
+                            "Panggilan untuk ibu dalam bahasa Batak",
+                            "Dengan cara yang teratur"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Apa arti kata 'kabur'?",
+                        options: [
+                            "Hujan rintik-rintik",
+                            "Dengan cara yang teratur",
+                            "Berlari cepat-cepat atau tidak jelas terlihat",
+                            "Kelompok kekerabatan"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Apa arti kata 'gerimis'?",
+                        options: [
+                            "Hujan rintik-rintik",
+                            "Berlari cepat-cepat",
+                            "Sejenis tanaman berdaun tebal",
+                            "Nama kucing Tigor"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Apa arti kata 'inang'?",
+                        options: [
+                            "Orang yang memimpin suku",
+                            "Kelompok kekerabatan",
+                            "Panggilan untuk ibu dalam bahasa Batak",
+                            "Dengan cara yang teratur"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Apa arti kata 'sistematis'?",
+                        options: [
+                            "Berlari cepat-cepat",
+                            "Dengan cara yang teratur",
+                            "Kelompok kekerabatan",
+                            "Sejenis tanaman berdaun tebal"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Apa arti kata 'marga'?",
+                        options: [
+                            "Kelompok kekerabatan",
+                            "Panggilan untuk ibu dalam bahasa Batak",
+                            "Orang yang memimpin suku",
+                            "Dengan cara yang teratur"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Kata yang sama lafal dan ejaannya, tetapi berbeda maknanya disebut...",
+                        options: [
+                            "Sinonim",
+                            "Antonim",
+                            "Homonim",
+                            "Polisemi"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Pada kalimat 'Kalau tidak memakai kacamata, semua tampak kabur bagi Ruli', kata 'kabur' berarti...",
+                        options: [
+                            "Berlari cepat-cepat",
+                            "Melarikan diri",
+                            "Tidak jelas terlihat",
+                            "Hujan rintik-rintik"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Pada kalimat 'Begitu Tigor menyalakan keran, Molen segera kabur masuk rumah', kata 'kabur' berarti...",
+                        options: [
+                            "Berlari cepat-cepat",
+                            "Tidak jelas terlihat",
+                            "Hujan rintik-rintik",
+                            "Dengan cara yang teratur"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Kata 'bisa' memiliki dua arti, yaitu...",
+                        options: [
+                            "Racun dan dapat/mampu",
+                            "Sungai dan perkalian",
+                            "Benda langit dan satuan waktu",
+                            "Alat pemukul dan nama kota"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Kata 'bulan' memiliki dua arti, yaitu...",
+                        options: [
+                            "Racun dan dapat/mampu",
+                            "Benda langit dan satuan waktu",
+                            "Sungai dan perkalian",
+                            "Pertemuan dan dekat/tidak renggang"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Awalan 'me-' pada kata dasar yang dimulai dengan huruf l, m, n, r, w, y akan tetap berbentuk...",
+                        options: [
+                            "me-",
+                            "men-",
+                            "mem-",
+                            "meng-"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Kata dasar 'tulis' jika diberi awalan 'me-' akan menjadi...",
+                        options: [
+                            "metulis",
+                            "menulis",
+                            "mentulis",
+                            "mengtulis"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Kata dasar 'sapu' jika diberi awalan 'me-' akan menjadi...",
+                        options: [
+                            "mesapu",
+                            "mensapu",
+                            "menyapu",
+                            "mengsapu"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Huruf awal kata dasar yang luluh jika ditambah awalan 'me-' adalah...",
+                        options: [
+                            "s, p, k, t",
+                            "l, m, n, r",
+                            "b, f, v",
+                            "a, i, u, e, o"
+                        ],
+                        answer: 0
+                    }
+                ],
+                selectedQuestions: [],
+                currentQuestionIndex: 0,
+                userAnswers: [],
+                score: 0,
+                correctAnswers: 0,
+                wrongAnswers: 0,
+                userData: {
+                    nama: '',
+                    sekolah: ''
+                },
+                quizCompleted: false
+            },
+            results: [],
+            currentPage: 1,
+            itemsPerPage: 10
         };
-        let resultsData = [];
-        let timerInterval;
-        
-        // Generate quiz questions
-        const generateQuizQuestions = () => {
-            const allQuestions = [
-                {
-                    question: "Apa arti kata 'keran'?",
-                    options: [
-                        "Tempat keluar air yang bisa dibuka dan ditutup",
-                        "Alat untuk mengukur tekanan air",
-                        "Pipa saluran air",
-                        "Wadah penampung air"
-                    ],
-                    answer: 0
-                },
-                {
-                    question: "Apa arti kata 'membuntuti'?",
-                    options: [
-                        "Memotong",
-                        "Mengikuti",
-                        "Mengganggu",
-                        "Menyentuh"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Apa arti kata 'sukulen'?",
-                    options: [
-                        "Jenis bunga yang harum",
-                        "Tanaman yang membutuhkan banyak air",
-                        "Sejenis tanaman berdaun tebal",
-                        "Tanaman yang tumbuh di air"
-                    ],
-                    answer: 2
-                },
-                {
-                    question: "Apa arti kata 'kabur' dalam kalimat 'Molen segera kabur masuk rumah'?",
-                    options: [
-                        "Tidak jelas terlihat",
-                        "Berlari cepat-cepat",
-                        "Bersembunyi",
-                        "Menghilang"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Apa arti kata 'kabur' dalam kalimat 'Semua tampak kabur bagi Ruli'?",
-                    options: [
-                        "Tidak jelas terlihat",
-                        "Berlari cepat-cepat",
-                        "Bersembunyi",
-                        "Menghilang"
-                    ],
-                    answer: 0
-                },
-                {
-                    question: "Apa arti kata 'gerimis'?",
-                    options: [
-                        "Hujan deras",
-                        "Hujan rintik-rintik",
-                        "Hujan es",
-                        "Hujan badai"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Apa arti kata 'inang'?",
-                    options: [
-                        "Panggilan untuk ayah dalam bahasa Batak",
-                        "Panggilan untuk ibu dalam bahasa Batak",
-                        "Panggilan untuk anak dalam bahasa Batak",
-                        "Panggilan untuk kakek dalam bahasa Batak"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Apa arti kata 'sistematis'?",
-                    options: [
-                        "Dengan cara yang teratur",
-                        "Dengan cara yang rumit",
-                        "Dengan cara yang cepat",
-                        "Dengan cara yang lambat"
-                    ],
-                    answer: 0
-                },
-                {
-                    question: "Apa arti kata 'marga'?",
-                    options: [
-                        "Nama keluarga",
-                        "Kelompok kekerabatan",
-                        "Tempat tinggal",
-                        "Jabatan dalam adat"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Siapakah 'Molen' dalam materi yang dipelajari?",
-                    options: [
-                        "Nama kucing Tigor",
-                        "Nama anjing Tigor",
-                        "Nama teman Tigor",
-                        "Nama adik Tigor"
-                    ],
-                    answer: 0
-                },
-                {
-                    question: "Apa yang dimaksud dengan homonim?",
-                    options: [
-                        "Kata yang sama artinya",
-                        "Kata yang berlawanan artinya",
-                        "Kata yang sama lafal dan ejaannya, tetapi berbeda maknanya",
-                        "Kata yang sama maknanya, tetapi berbeda lafal dan ejaannya"
-                    ],
-                    answer: 2
-                },
-                {
-                    question: "Manakah yang merupakan contoh homonim?",
-                    options: [
-                        "Makan - Minum",
-                        "Besar - Kecil",
-                        "Bisa (racun) - Bisa (mampu)",
-                        "Cantik - Indah"
-                    ],
-                    answer: 2
-                },
-                {
-                    question: "Awalan 'me-' akan berubah menjadi 'mem-' jika bertemu dengan kata dasar yang berawalan huruf?",
-                    options: [
-                        "l, m, n, r",
-                        "b, f, p, v",
-                        "c, d, j, t",
-                        "a, e, g, h"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Awalan 'me-' akan berubah menjadi 'meng-' jika bertemu dengan kata dasar yang berawalan huruf?",
-                    options: [
-                        "l, m, n, r",
-                        "b, f, p, v",
-                        "c, d, j, t",
-                        "a, e, g, h, i, k, o, u"
-                    ],
-                    answer: 3
-                },
-                {
-                    question: "Awalan 'me-' akan berubah menjadi 'meny-' jika bertemu dengan kata dasar yang berawalan huruf?",
-                    options: [
-                        "s",
-                        "c",
-                        "p",
-                        "t"
-                    ],
-                    answer: 0
-                },
-                {
-                    question: "Awalan 'me-' akan berubah menjadi 'menge-' jika bertemu dengan kata dasar yang?",
-                    options: [
-                        "Berawalan huruf vokal",
-                        "Berawalan huruf konsonan",
-                        "Bersuku kata satu",
-                        "Bersuku kata dua"
-                    ],
-                    answer: 2
-                },
-                {
-                    question: "Huruf apa saja yang luluh jika ditambah awalan 'me-'?",
-                    options: [
-                        "s, p, k, t",
-                        "b, f, v",
-                        "l, m, n, r",
-                        "a, i, u, e, o"
-                    ],
-                    answer: 0
-                },
-                {
-                    question: "Bentuk kata berimbuhan yang benar dari kata dasar 'tulis' adalah?",
-                    options: [
-                        "metulis",
-                        "menulis",
-                        "mentulis",
-                        "mentuliskan"
-                    ],
-                    answer: 1
-                },
-                {
-                    question: "Bentuk kata berimbuhan yang benar dari kata dasar 'sapu' adalah?",
-                    options: [
-                        "mesapu",
-                        "mensapu",
-                        "menyapu",
-                        "mengsapu"
-                    ],
-                    answer: 2
-                },
-                {
-                    question: "Bentuk kata berimbuhan yang benar dari kata dasar 'kupas' adalah?",
-                    options: [
-                        "mekupas",
-                        "mengkupas",
-                        "mengupas",
-                        "menkupas"
-                    ],
-                    answer: 2
-                }
-            ];
-            
-            // Shuffle all questions
-            const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
-            
-            // Take only 10 questions
-            const selectedQuestions = shuffledQuestions.slice(0, 10);
-            
-            // Shuffle options for each question
-            return selectedQuestions.map(q => {
-                const options = [...q.options];
-                const correctAnswer = options[q.answer];
-                const shuffledOptions = options.sort(() => Math.random() - 0.5);
-                const newAnswer = shuffledOptions.indexOf(correctAnswer);
-                
-                return {
-                    question: q.question,
-                    options: shuffledOptions,
-                    answer: newAnswer
-                };
-            });
-        };
-        
-        // Initialize the application
-        const init = () => {
-            // Load data from localStorage if available
+
+        // DOM Elements
+        const app = document.getElementById('app');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const pages = document.querySelectorAll('.page');
+        const mulaiButton = document.getElementById('mulai-button');
+        const mulaiQuizBtn = document.getElementById('mulai-quiz-btn');
+        const quizIntro = document.getElementById('quiz-intro');
+        const quizContainer = document.getElementById('quiz-container');
+        const quizResult = document.getElementById('quiz-result');
+        const quizReview = document.getElementById('quiz-review');
+        const namaSekolahInput = document.getElementById('nama-sekolah');
+        const namaSiswaInput = document.getElementById('nama-siswa');
+        const quizUserInfo = document.getElementById('quiz-user-info');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionElement = document.getElementById('current-question');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const resultName = document.getElementById('result-name');
+        const resultSchool = document.getElementById('result-school');
+        const resultScore = document.getElementById('result-score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const wrongAnswersElement = document.getElementById('wrong-answers');
+        const reviewBtn = document.getElementById('review-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const backToResultBtn = document.getElementById('back-to-result-btn');
+        const reviewContainer = document.getElementById('review-container');
+        const filterSekolah = document.getElementById('filter-sekolah');
+        const exportExcelBtn = document.getElementById('export-excel-btn');
+        const rekapTableBody = document.getElementById('rekap-table-body');
+        const peringkatTableBody = document.getElementById('peringkat-table-body');
+        const noDataRekap = document.getElementById('no-data-rekap');
+        const noDataPeringkat = document.getElementById('no-data-peringkat');
+        const totalSiswa = document.getElementById('total-siswa');
+        const rataNilai = document.getElementById('rata-nilai');
+        const nilaiTertinggi = document.getElementById('nilai-tertinggi');
+        const paginationContainer = document.getElementById('pagination-container');
+        const nilaiChart = document.getElementById('nilai-chart');
+
+        // Initialize Chart
+        let myChart = null;
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load data from localStorage
             loadData();
             
-            // Set up event listeners
-            document.getElementById('btnMulai').addEventListener('click', () => showSection('menuUtama'));
-            document.getElementById('btnMulaiQuiz').addEventListener('click', startQuiz);
-            document.getElementById('btnNextQuestion').addEventListener('click', nextQuestion);
-            document.getElementById('btnPrevQuestion').addEventListener('click', prevQuestion);
-            document.getElementById('filterSekolah').addEventListener('change', updateRekapTable);
-            document.getElementById('sortBy').addEventListener('change', updateRekapTable);
-        };
-        
-        // Load data from localStorage
-        const loadData = () => {
-            const savedResults = localStorage.getItem('quizResults');
-            if (savedResults) {
-                resultsData = JSON.parse(savedResults);
-                updateFilterOptions();
-                updateRekapTable();
-                updatePeringkatTable();
-            }
-        };
-        
-        // Save data to localStorage
-        const saveData = () => {
-            localStorage.setItem('quizResults', JSON.stringify(resultsData));
-        };
-        
-        // Show a specific section
-        const showSection = (sectionId) => {
-            // Hide all sections
-            const sections = ['beranda', 'menuUtama', 'materi', 'quizForm', 'quiz', 'quizResult', 'quizReview', 'peringkat', 'rekap'];
-            sections.forEach(section => {
-                document.getElementById(section).classList.add('hidden');
+            // Initialize the app
+            initApp();
+            
+            // Mobile menu toggle
+            mobileMenuButton.addEventListener('click', toggleMobileMenu);
+            
+            // Menu navigation
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navigateTo(item.dataset.page);
+                    if (window.innerWidth < 768) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
             });
             
-            // Show the requested section
-            document.getElementById(sectionId).classList.remove('hidden');
+            // Start button on homepage
+            mulaiButton.addEventListener('click', () => {
+                navigateTo('materi');
+            });
             
-            // Additional actions for specific sections
-            if (sectionId === 'peringkat') {
+            // Start quiz button
+            mulaiQuizBtn.addEventListener('click', startQuiz);
+            
+            // Quiz navigation buttons
+            prevBtn.addEventListener('click', goToPreviousQuestion);
+            nextBtn.addEventListener('click', goToNextQuestion);
+            finishBtn.addEventListener('click', finishQuiz);
+            
+            // Quiz result buttons
+            reviewBtn.addEventListener('click', showQuizReview);
+            restartBtn.addEventListener('click', restartQuiz);
+            backToResultBtn.addEventListener('click', showQuizResult);
+            
+            // Filter and export
+            filterSekolah.addEventListener('change', filterRekapData);
+            exportExcelBtn.addEventListener('click', exportToExcel);
+        });
+
+        // Functions
+        function initApp() {
+            // Set default page
+            navigateTo('beranda');
+            
+            // Update UI based on data
+            updateSchoolFilter();
+            updateRekapTable();
+            updatePeringkatTable();
+            updateStatistics();
+            createChart();
+        }
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        function navigateTo(page) {
+            // Hide all pages
+            pages.forEach(p => p.classList.add('hidden'));
+            
+            // Show selected page
+            document.getElementById(`${page}-page`).classList.remove('hidden');
+            
+            // Update active menu item
+            menuItems.forEach(item => {
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Set current page
+            appData.currentPage = page;
+            
+            // Special actions for specific pages
+            if (page === 'peringkat') {
                 updatePeringkatTable();
-            } else if (sectionId === 'rekap') {
+            } else if (page === 'rekap') {
                 updateRekapTable();
-                updateCharts();
+                updateStatistics();
+                createChart();
             }
-        };
-        
-        // Show quiz form
-        const showQuizForm = () => {
-            document.getElementById('namaSekolah').value = '';
-            document.getElementById('namaSiswa').value = '';
-            showSection('quizForm');
-        };
-        
-        // Start the quiz
-        const startQuiz = () => {
-            const namaSekolah = document.getElementById('namaSekolah').value.trim();
-            const namaSiswa = document.getElementById('namaSiswa').value.trim();
+        }
+
+        function startQuiz() {
+            const sekolah = namaSekolahInput.value.trim();
+            const nama = namaSiswaInput.value.trim();
             
-            if (!namaSekolah || !namaSiswa) {
+            if (!sekolah || !nama) {
                 alert('Silakan isi nama sekolah dan nama siswa terlebih dahulu!');
                 return;
             }
             
-            // Generate quiz questions
-            currentQuiz = {
-                questions: generateQuizQuestions(),
-                answers: Array(10).fill(null),
-                currentQuestionIndex: 0,
-                score: 0,
-                startTime: new Date(),
-                endTime: null,
-                timeSpent: 0,
-                namaSekolah: namaSekolah,
-                namaSiswa: namaSiswa
+            // Save user data
+            appData.quizData.userData = {
+                nama: nama,
+                sekolah: sekolah
             };
             
-            // Display quiz information
-            document.getElementById('quizNamaSekolah').textContent = namaSekolah;
-            document.getElementById('quizNamaSiswa').textContent = namaSiswa;
-            document.getElementById('totalQuestions').textContent = currentQuiz.questions.length;
+            // Select 10 random questions
+            const allQuestions = [...appData.quizData.questions];
+            const selectedQuestions = [];
             
-            // Show the first question
+            while (selectedQuestions.length < 10 && allQuestions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * allQuestions.length);
+                selectedQuestions.push(allQuestions.splice(randomIndex, 1)[0]);
+            }
+            
+            appData.quizData.selectedQuestions = selectedQuestions;
+            appData.quizData.userAnswers = Array(selectedQuestions.length).fill(null);
+            appData.quizData.currentQuestionIndex = 0;
+            appData.quizData.quizCompleted = false;
+            
+            // Update UI
+            quizIntro.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            quizResult.classList.add('hidden');
+            quizReview.classList.add('hidden');
+            
+            quizUserInfo.textContent = `${nama} - ${sekolah}`;
+            totalQuestionsElement.textContent = selectedQuestions.length;
+            
+            // Show first question
             showQuestion(0);
-            
-            // Start the timer
-            startTimer();
-            
-            // Show the quiz section
-            showSection('quiz');
-        };
-        
-        // Show a specific question
-        const showQuestion = (index) => {
-            const question = currentQuiz.questions[index];
-            const questionContainer = document.getElementById('questionContainer');
-            const questionText = document.getElementById('questionText');
-            const optionsContainer = document.getElementById('optionsContainer');
-            const currentQuestionNumber = document.getElementById('currentQuestionNumber');
-            const quizProgress = document.getElementById('quizProgress');
-            
-            // Update question number and progress
-            currentQuestionNumber.textContent = index + 1;
-            quizProgress.style.width = `${((index + 1) / currentQuiz.questions.length) * 100}%`;
+        }
+
+        function showQuestion(index) {
+            const question = appData.quizData.selectedQuestions[index];
+            const userAnswer = appData.quizData.userAnswers[index];
             
             // Update question text
             questionText.textContent = `${index + 1}. ${question.question}`;
             
-            // Clear previous options
+            // Clear options
             optionsContainer.innerHTML = '';
             
-            // Add options
-            question.options.forEach((option, optionIndex) => {
+            // Shuffle options
+            const shuffledOptions = [...question.options];
+            for (let i = shuffledOptions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+            }
+            
+            // Create option elements
+            shuffledOptions.forEach((option, optionIndex) => {
                 const optionElement = document.createElement('div');
-                optionElement.className = 'quiz-option p-3 border rounded-lg cursor-pointer';
-                if (currentQuiz.answers[index] === optionIndex) {
+                optionElement.className = 'quiz-option p-3 rounded-lg';
+                
+                // Check if this option was previously selected
+                if (userAnswer === optionIndex) {
                     optionElement.classList.add('selected');
                 }
                 
                 optionElement.innerHTML = `
                     <div class="flex items-center">
-                        <div class="w-6 h-6 rounded-full border-2 border-orange-500 flex items-center justify-center mr-3">
-                            <span>${String.fromCharCode(65 + optionIndex)}</span>
+                        <div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center mr-3">
+                            <span class="text-sm font-bold">${String.fromCharCode(65 + optionIndex)}</span>
                         </div>
                         <span>${option}</span>
                     </div>
@@ -996,259 +1240,210 @@
             });
             
             // Update navigation buttons
-            document.getElementById('btnPrevQuestion').disabled = index === 0;
-            document.getElementById('btnPrevQuestion').classList.toggle('opacity-50', index === 0);
-            document.getElementById('btnPrevQuestion').classList.toggle('cursor-not-allowed', index === 0);
+            prevBtn.classList.toggle('hidden', index === 0);
+            nextBtn.classList.toggle('hidden', index === appData.quizData.selectedQuestions.length - 1);
+            finishBtn.classList.toggle('hidden', index !== appData.quizData.selectedQuestions.length - 1);
             
-            const isLastQuestion = index === currentQuiz.questions.length - 1;
-            document.getElementById('btnNextQuestion').textContent = isLastQuestion ? 'Selesai' : 'Selanjutnya';
-        };
-        
-        // Select an option
-        const selectOption = (optionIndex) => {
-            const currentIndex = currentQuiz.currentQuestionIndex;
-            currentQuiz.answers[currentIndex] = optionIndex;
+            // Update current question indicator
+            currentQuestionElement.textContent = index + 1;
             
-            // Update option styling
-            const options = document.querySelectorAll('.quiz-option');
+            // Update progress bar
+            const progress = ((index + 1) / appData.quizData.selectedQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function selectOption(optionIndex) {
+            const currentIndex = appData.quizData.currentQuestionIndex;
+            
+            // Save user answer
+            appData.quizData.userAnswers[currentIndex] = optionIndex;
+            
+            // Update UI
+            const options = optionsContainer.querySelectorAll('.quiz-option');
             options.forEach((option, index) => {
-                option.classList.toggle('selected', index === optionIndex);
-            });
-        };
-        
-        // Go to the next question
-        const nextQuestion = () => {
-            const currentIndex = currentQuiz.currentQuestionIndex;
-            const isLastQuestion = currentIndex === currentQuiz.questions.length - 1;
-            
-            if (isLastQuestion) {
-                finishQuiz();
-            } else {
-                currentQuiz.currentQuestionIndex++;
-                showQuestion(currentQuiz.currentQuestionIndex);
-            }
-        };
-        
-        // Go to the previous question
-        const prevQuestion = () => {
-            if (currentQuiz.currentQuestionIndex > 0) {
-                currentQuiz.currentQuestionIndex--;
-                showQuestion(currentQuiz.currentQuestionIndex);
-            }
-        };
-        
-        // Start the quiz timer
-        const startTimer = () => {
-            const timerElement = document.getElementById('quizTimer');
-            let timeLeft = 10 * 60; // 10 minutes in seconds
-            
-            const updateTimer = () => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    finishQuiz();
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
                 }
-                
-                timeLeft--;
-            };
-            
-            updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
-        };
-        
-        // Finish the quiz
-        const finishQuiz = () => {
-            // Stop the timer
-            clearInterval(timerInterval);
-            
+            });
+        }
+
+        function goToPreviousQuestion() {
+            if (appData.quizData.currentQuestionIndex > 0) {
+                appData.quizData.currentQuestionIndex--;
+                showQuestion(appData.quizData.currentQuestionIndex);
+            }
+        }
+
+        function goToNextQuestion() {
+            if (appData.quizData.currentQuestionIndex < appData.quizData.selectedQuestions.length - 1) {
+                appData.quizData.currentQuestionIndex++;
+                showQuestion(appData.quizData.currentQuestionIndex);
+            }
+        }
+
+        function finishQuiz() {
             // Calculate score
-            currentQuiz.endTime = new Date();
-            currentQuiz.timeSpent = Math.floor((currentQuiz.endTime - currentQuiz.startTime) / 1000); // in seconds
+            let correctCount = 0;
             
-            let correctAnswers = 0;
-            currentQuiz.questions.forEach((question, index) => {
-                if (currentQuiz.answers[index] === question.answer) {
-                    correctAnswers++;
+            appData.quizData.selectedQuestions.forEach((question, index) => {
+                const userAnswer = appData.quizData.userAnswers[index];
+                const correctAnswer = question.answer;
+                
+                // Find the correct option index in the shuffled options
+                const options = question.options;
+                const correctOption = options[correctAnswer];
+                
+                // Check if user selected the correct option
+                if (userAnswer !== null && options[userAnswer] === correctOption) {
+                    correctCount++;
                 }
             });
             
-            currentQuiz.score = correctAnswers;
+            const totalQuestions = appData.quizData.selectedQuestions.length;
+            const score = Math.round((correctCount / totalQuestions) * 100);
             
-            // Save result
+            // Save quiz results
+            appData.quizData.score = score;
+            appData.quizData.correctAnswers = correctCount;
+            appData.quizData.wrongAnswers = totalQuestions - correctCount;
+            appData.quizData.quizCompleted = true;
+            
+            // Add to results
             const result = {
-                namaSiswa: currentQuiz.namaSiswa,
-                namaSekolah: currentQuiz.namaSekolah,
-                score: currentQuiz.score,
-                totalQuestions: currentQuiz.questions.length,
-                timeSpent: currentQuiz.timeSpent,
-                date: new Date().toISOString(),
-                answers: currentQuiz.answers,
-                questions: currentQuiz.questions
+                nama: appData.quizData.userData.nama,
+                sekolah: appData.quizData.userData.sekolah,
+                nilai: score,
+                tanggal: new Date().toISOString(),
+                benar: correctCount,
+                salah: totalQuestions - correctCount
             };
             
-            resultsData.push(result);
+            appData.results.push(result);
+            
+            // Save data
             saveData();
             
-            // Show result
-            showQuizResult(result);
-        };
-        
-        // Show quiz result
-        const showQuizResult = (result) => {
-            document.getElementById('resultNamaSiswa').textContent = result.namaSiswa;
-            document.getElementById('resultScore').textContent = result.score;
-            document.getElementById('resultTotalQuestions').textContent = result.totalQuestions;
-            document.getElementById('resultPercentage').textContent = `${Math.round((result.score / result.totalQuestions) * 100)}%`;
-            
-            // Create chart
-            const ctx = document.getElementById('resultChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Benar', 'Salah'],
-                    datasets: [{
-                        data: [result.score, result.totalQuestions - result.score],
-                        backgroundColor: ['#4CAF50', '#FF5252'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Hasil Jawaban'
-                        }
-                    }
-                }
-            });
+            // Update UI
+            showQuizResult();
             
             // Create confetti effect
             createConfetti();
+        }
+
+        function showQuizResult() {
+            quizContainer.classList.add('hidden');
+            quizResult.classList.remove('hidden');
+            quizReview.classList.add('hidden');
             
-            // Show result section
-            showSection('quizResult');
-        };
-        
-        // Create confetti effect
-        const createConfetti = () => {
-            const container = document.getElementById('confettiContainer');
-            container.innerHTML = '';
+            resultName.textContent = `Nama: ${appData.quizData.userData.nama}`;
+            resultSchool.textContent = `Sekolah: ${appData.quizData.userData.sekolah}`;
+            resultScore.textContent = appData.quizData.score;
+            correctAnswersElement.textContent = `${appData.quizData.correctAnswers} soal`;
+            wrongAnswersElement.textContent = `${appData.quizData.wrongAnswers} soal`;
+        }
+
+        function showQuizReview() {
+            quizResult.classList.add('hidden');
+            quizReview.classList.remove('hidden');
             
-            const colors = ['#f2d74e', '#95c3de', '#ff9a9a', '#a9cf54', '#9e7eb9'];
+            // Clear review container
+            reviewContainer.innerHTML = '';
             
-            for (let i = 0; i < 50; i++) {
+            // Create review items
+            appData.quizData.selectedQuestions.forEach((question, index) => {
+                const userAnswer = appData.quizData.userAnswers[index];
+                const correctAnswer = question.answer;
+                
+                // Find the correct option index in the shuffled options
+                const options = question.options;
+                const correctOption = options[correctAnswer];
+                
+                // Check if user selected the correct option
+                const isCorrect = userAnswer !== null && options[userAnswer] === correctOption;
+                
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'card p-6';
+                
+                let optionsHtml = '';
+                options.forEach((option, optionIndex) => {
+                    const isUserAnswer = userAnswer === optionIndex;
+                    const isCorrectOption = option === correctOption;
+                    
+                    let optionClass = 'quiz-option p-3 rounded-lg mb-2';
+                    if (isUserAnswer && isCorrectOption) {
+                        optionClass += ' correct';
+                    } else if (isUserAnswer && !isCorrectOption) {
+                        optionClass += ' incorrect';
+                    } else if (isCorrectOption) {
+                        optionClass += ' correct';
+                    }
+                    
+                    optionsHtml += `
+                        <div class="${optionClass}">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center mr-3">
+                                    <span class="text-sm font-bold">${String.fromCharCode(65 + optionIndex)}</span>
+                                </div>
+                                <span>${option}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                reviewItem.innerHTML = `
+                    <h3 class="text-xl font-bold mb-4">${index + 1}. ${question.question}</h3>
+                    <div class="mb-4">
+                        ${optionsHtml}
+                    </div>
+                    <div class="bg-${isCorrect ? 'green' : 'red'}-100 p-3 rounded-lg">
+                        <p class="font-semibold text-${isCorrect ? 'green' : 'red'}-700">
+                            ${isCorrect ? '✓ Jawaban benar!' : '✗ Jawaban salah!'}
+                        </p>
+                        <p>Jawaban yang benar: ${correctOption}</p>
+                    </div>
+                `;
+                
+                reviewContainer.appendChild(reviewItem);
+            });
+        }
+
+        function restartQuiz() {
+            quizResult.classList.add('hidden');
+            quizIntro.classList.remove('hidden');
+            
+            // Reset inputs
+            namaSekolahInput.value = '';
+            namaSiswaInput.value = '';
+        }
+
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti-container');
+            confettiContainer.innerHTML = '';
+            
+            const colors = ['#FF6B6B', '#4CAF50', '#FFD700', '#4A90E2', '#9C27B0'];
+            
+            for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = `${Math.random() * 100}%`;
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 confetti.style.width = `${Math.random() * 10 + 5}px`;
                 confetti.style.height = `${Math.random() * 10 + 5}px`;
-                confetti.style.opacity = '0';
-                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+                confetti.style.opacity = Math.random();
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
                 confetti.style.animationDelay = `${Math.random() * 2}s`;
                 
-                container.appendChild(confetti);
+                confettiContainer.appendChild(confetti);
             }
-        };
-        
-        // Show quiz review
-        const showQuizReview = () => {
-            const reviewContainer = document.getElementById('reviewContainer');
-            reviewContainer.innerHTML = '';
-            
-            const latestResult = resultsData[resultsData.length - 1];
-            
-            latestResult.questions.forEach((question, index) => {
-                const userAnswer = latestResult.answers[index];
-                const correctAnswer = question.answer;
-                const isCorrect = userAnswer === correctAnswer;
-                
-                const reviewItem = document.createElement('div');
-                reviewItem.className = 'bg-white p-4 rounded-lg shadow';
-                
-                reviewItem.innerHTML = `
-                    <h3 class="font-bold mb-2">${index + 1}. ${question.question}</h3>
-                    <div class="space-y-2">
-                        ${question.options.map((option, optionIndex) => `
-                            <div class="p-2 rounded ${optionIndex === userAnswer && isCorrect ? 'bg-green-100 border border-green-500' : 
-                                optionIndex === userAnswer && !isCorrect ? 'bg-red-100 border border-red-500' : 
-                                optionIndex === correctAnswer && !isCorrect ? 'bg-green-50 border border-green-300' : ''}">
-                                <div class="flex items-center">
-                                    <div class="w-6 h-6 rounded-full border-2 ${optionIndex === correctAnswer ? 'border-green-500' : 'border-gray-300'} flex items-center justify-center mr-3">
-                                        <span>${String.fromCharCode(65 + optionIndex)}</span>
-                                    </div>
-                                    <span>${option}</span>
-                                    ${optionIndex === userAnswer && isCorrect ? '<span class="ml-auto text-green-500">✓</span>' : 
-                                    optionIndex === userAnswer && !isCorrect ? '<span class="ml-auto text-red-500">✗</span>' : 
-                                    optionIndex === correctAnswer && !isCorrect ? '<span class="ml-auto text-green-500">(Jawaban benar)</span>' : ''}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                
-                reviewContainer.appendChild(reviewItem);
-            });
-            
-            showSection('quizReview');
-        };
-        
-        // Update peringkat table
-        const updatePeringkatTable = () => {
-            const tableBody = document.getElementById('peringkatTableBody');
-            tableBody.innerHTML = '';
-            
-            // Sort results by score (descending) and time spent (ascending)
-            const sortedResults = [...resultsData].sort((a, b) => {
-                if (b.score !== a.score) {
-                    return b.score - a.score;
-                }
-                return a.timeSpent - b.timeSpent;
-            });
-            
-            // Update top 3 ranks
-            for (let i = 0; i < 3; i++) {
-                if (sortedResults[i]) {
-                    document.getElementById(`rank${i+1}Name`).textContent = sortedResults[i].namaSiswa.split(' ')[0];
-                    document.getElementById(`rank${i+1}Score`).textContent = `${sortedResults[i].score}/${sortedResults[i].totalQuestions}`;
-                }
-            }
-            
-            // Populate table
-            sortedResults.forEach((result, index) => {
-                const row = document.createElement('tr');
-                
-                const minutes = Math.floor(result.timeSpent / 60);
-                const seconds = result.timeSpent % 60;
-                const timeFormatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                
-                row.innerHTML = `
-                    <td class="border border-orange-300 p-2 text-center">${index + 1}</td>
-                    <td class="border border-orange-300 p-2">${result.namaSiswa}</td>
-                    <td class="border border-orange-300 p-2">${result.namaSekolah}</td>
-                    <td class="border border-orange-300 p-2 text-center">${result.score}/${result.totalQuestions} (${Math.round((result.score / result.totalQuestions) * 100)}%)</td>
-                    <td class="border border-orange-300 p-2 text-center">${timeFormatted}</td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        };
-        
-        // Update filter options
-        const updateFilterOptions = () => {
-            const filterSekolah = document.getElementById('filterSekolah');
-            
+        }
+
+        function updateSchoolFilter() {
             // Get unique schools
-            const schools = [...new Set(resultsData.map(result => result.namaSekolah))];
+            const schools = [...new Set(appData.results.map(result => result.sekolah))];
             
-            // Clear previous options except the first one
+            // Clear existing options except the first one
             while (filterSekolah.options.length > 1) {
                 filterSekolah.remove(1);
             }
@@ -1260,108 +1455,237 @@
                 option.textContent = school;
                 filterSekolah.appendChild(option);
             });
-        };
-        
-        // Update rekap table
-        const updateRekapTable = () => {
-            const tableBody = document.getElementById('rekapTableBody');
-            const filterSekolah = document.getElementById('filterSekolah').value;
-            const sortBy = document.getElementById('sortBy').value;
+        }
+
+        function filterRekapData() {
+            updateRekapTable();
+            updateStatistics();
+            createChart();
+        }
+
+        function updateRekapTable() {
+            // Get filtered results
+            const selectedSchool = filterSekolah.value;
+            let filteredResults = [...appData.results];
             
-            // Filter results
-            let filteredResults = [...resultsData];
-            if (filterSekolah) {
-                filteredResults = filteredResults.filter(result => result.namaSekolah === filterSekolah);
+            if (selectedSchool !== 'semua') {
+                filteredResults = filteredResults.filter(result => result.sekolah === selectedSchool);
             }
             
-            // Sort results
-            switch (sortBy) {
-                case 'nilai-desc':
-                    filteredResults.sort((a, b) => b.score - a.score);
-                    break;
-                case 'nilai-asc':
-                    filteredResults.sort((a, b) => a.score - b.score);
-                    break;
-                case 'nama-asc':
-                    filteredResults.sort((a, b) => a.namaSiswa.localeCompare(b.namaSiswa));
-                    break;
-                case 'nama-desc':
-                    filteredResults.sort((a, b) => b.namaSiswa.localeCompare(a.namaSiswa));
-                    break;
-                case 'waktu-desc':
-                    filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
-                    break;
-                case 'waktu-asc':
-                    filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    break;
+            // Sort by date (newest first)
+            filteredResults.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredResults.length / appData.itemsPerPage);
+            const startIndex = (appData.currentPage - 1) * appData.itemsPerPage;
+            const endIndex = startIndex + appData.itemsPerPage;
+            const paginatedResults = filteredResults.slice(startIndex, endIndex);
+            
+            // Update table
+            rekapTableBody.innerHTML = '';
+            
+            if (paginatedResults.length === 0) {
+                noDataRekap.classList.remove('hidden');
+                paginationContainer.classList.add('hidden');
+            } else {
+                noDataRekap.classList.add('hidden');
+                paginationContainer.classList.remove('hidden');
+                
+                paginatedResults.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    row.className = index % 2 === 0 ? '' : 'bg-gray-50';
+                    
+                    const date = new Date(result.tanggal);
+                    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4">${startIndex + index + 1}</td>
+                        <td class="px-6 py-4">${result.nama}</td>
+                        <td class="px-6 py-4">${result.sekolah}</td>
+                        <td class="px-6 py-4 font-bold">${result.nilai}</td>
+                        <td class="px-6 py-4">${formattedDate}</td>
+                    `;
+                    
+                    rekapTableBody.appendChild(row);
+                });
+                
+                // Update pagination
+                updatePagination(totalPages);
+            }
+        }
+
+        function updatePagination(totalPages) {
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                return;
             }
             
-            // Clear table
-            tableBody.innerHTML = '';
-            
-            // Populate table
-            filteredResults.forEach((result, index) => {
-                const row = document.createElement('tr');
-                
-                const date = new Date(result.date);
-                const dateFormatted = date.toLocaleDateString('id-ID');
-                const timeFormatted = date.toLocaleTimeString('id-ID');
-                
-                row.innerHTML = `
-                    <td class="border border-orange-300 p-2 text-center">${index + 1}</td>
-                    <td class="border border-orange-300 p-2">${result.namaSiswa}</td>
-                    <td class="border border-orange-300 p-2">${result.namaSekolah}</td>
-                    <td class="border border-orange-300 p-2 text-center">${result.score}/${result.totalQuestions} (${Math.round((result.score / result.totalQuestions) * 100)}%)</td>
-                    <td class="border border-orange-300 p-2 text-center">${dateFormatted}</td>
-                    <td class="border border-orange-300 p-2 text-center">${timeFormatted}</td>
-                `;
-                
-                tableBody.appendChild(row);
+            // Previous button
+            const prevPageBtn = document.createElement('button');
+            prevPageBtn.className = 'pagination-btn';
+            prevPageBtn.innerHTML = '&laquo;';
+            prevPageBtn.disabled = appData.currentPage === 1;
+            prevPageBtn.addEventListener('click', () => {
+                if (appData.currentPage > 1) {
+                    appData.currentPage--;
+                    updateRekapTable();
+                }
             });
+            paginationContainer.appendChild(prevPageBtn);
             
-            // Update charts
-            updateCharts();
-        };
-        
-        // Update charts
-        const updateCharts = () => {
-            const filterSekolah = document.getElementById('filterSekolah').value;
-            
-            // Filter results
-            let filteredResults = [...resultsData];
-            if (filterSekolah) {
-                filteredResults = filteredResults.filter(result => result.namaSekolah === filterSekolah);
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === appData.currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    appData.currentPage = i;
+                    updateRekapTable();
+                });
+                paginationContainer.appendChild(pageBtn);
             }
             
-            // Nilai chart
-            const nilaiCtx = document.getElementById('nilaiChart').getContext('2d');
-            const nilaiData = [0, 0, 0, 0, 0]; // 0-20, 21-40, 41-60, 61-80, 81-100
+            // Next button
+            const nextPageBtn = document.createElement('button');
+            nextPageBtn.className = 'pagination-btn';
+            nextPageBtn.innerHTML = '&raquo;';
+            nextPageBtn.disabled = appData.currentPage === totalPages;
+            nextPageBtn.addEventListener('click', () => {
+                if (appData.currentPage < totalPages) {
+                    appData.currentPage++;
+                    updateRekapTable();
+                }
+            });
+            paginationContainer.appendChild(nextPageBtn);
+        }
+
+        function updatePeringkatTable() {
+            // Sort results by score (highest first)
+            const sortedResults = [...appData.results].sort((a, b) => b.nilai - a.nilai);
+            
+            // Update top 3
+            for (let i = 0; i < 3; i++) {
+                const result = sortedResults[i];
+                const rank = i + 1;
+                
+                if (result) {
+                    document.getElementById(`rank-${rank}-name`).textContent = result.nama;
+                    document.getElementById(`rank-${rank}-school`).textContent = result.sekolah;
+                    document.getElementById(`rank-${rank}-score`).textContent = result.nilai;
+                }
+            }
+            
+            // Update table
+            peringkatTableBody.innerHTML = '';
+            
+            if (sortedResults.length === 0) {
+                noDataPeringkat.classList.remove('hidden');
+            } else {
+                noDataPeringkat.classList.add('hidden');
+                
+                sortedResults.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    row.className = index % 2 === 0 ? '' : 'bg-gray-50';
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 font-bold">${index + 1}</td>
+                        <td class="px-6 py-4">${result.nama}</td>
+                        <td class="px-6 py-4">${result.sekolah}</td>
+                        <td class="px-6 py-4 font-bold">${result.nilai}</td>
+                    `;
+                    
+                    peringkatTableBody.appendChild(row);
+                });
+            }
+        }
+
+        function updateStatistics() {
+            // Get filtered results
+            const selectedSchool = filterSekolah.value;
+            let filteredResults = [...appData.results];
+            
+            if (selectedSchool !== 'semua') {
+                filteredResults = filteredResults.filter(result => result.sekolah === selectedSchool);
+            }
+            
+            // Calculate statistics
+            const count = filteredResults.length;
+            let sum = 0;
+            let max = 0;
             
             filteredResults.forEach(result => {
-                const percentage = Math.round((result.score / result.totalQuestions) * 100);
-                const index = Math.min(Math.floor(percentage / 20), 4);
-                nilaiData[index]++;
+                sum += result.nilai;
+                if (result.nilai > max) {
+                    max = result.nilai;
+                }
             });
             
-            if (window.nilaiChart) {
-                window.nilaiChart.destroy();
+            const average = count > 0 ? Math.round(sum / count) : 0;
+            
+            // Update UI
+            totalSiswa.textContent = count;
+            rataNilai.textContent = average;
+            nilaiTertinggi.textContent = max;
+        }
+
+        function createChart() {
+            // Get filtered results
+            const selectedSchool = filterSekolah.value;
+            let filteredResults = [...appData.results];
+            
+            if (selectedSchool !== 'semua') {
+                filteredResults = filteredResults.filter(result => result.sekolah === selectedSchool);
             }
             
-            window.nilaiChart = new Chart(nilaiCtx, {
+            // Calculate score distribution
+            const scoreRanges = [
+                { min: 0, max: 20, label: '0-20', count: 0 },
+                { min: 21, max: 40, label: '21-40', count: 0 },
+                { min: 41, max: 60, label: '41-60', count: 0 },
+                { min: 61, max: 80, label: '61-80', count: 0 },
+                { min: 81, max: 100, label: '81-100', count: 0 }
+            ];
+            
+            filteredResults.forEach(result => {
+                const score = result.nilai;
+                for (const range of scoreRanges) {
+                    if (score >= range.min && score <= range.max) {
+                        range.count++;
+                        break;
+                    }
+                }
+            });
+            
+            // Destroy existing chart if it exists
+            if (myChart) {
+                myChart.destroy();
+            }
+            
+            // Create new chart
+            const ctx = nilaiChart.getContext('2d');
+            myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                    labels: scoreRanges.map(range => range.label),
                     datasets: [{
                         label: 'Jumlah Siswa',
-                        data: nilaiData,
+                        data: scoreRanges.map(range => range.count),
                         backgroundColor: [
-                            '#FF5252',
-                            '#FF9800',
-                            '#FFC107',
-                            '#8BC34A',
-                            '#4CAF50'
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(255, 159, 64, 0.7)',
+                            'rgba(255, 205, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(54, 162, 235, 0.7)'
                         ],
-                        borderWidth: 0
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(255, 159, 64)',
+                            'rgb(255, 205, 86)',
+                            'rgb(75, 192, 192)',
+                            'rgb(54, 162, 235)'
+                        ],
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -1373,140 +1697,71 @@
                                 stepSize: 1
                             }
                         }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Distribusi Nilai'
-                        }
                     }
                 }
             });
+        }
+
+        function exportToExcel() {
+            // Get filtered results
+            const selectedSchool = filterSekolah.value;
+            let filteredResults = [...appData.results];
             
-            // Sekolah chart
-            const sekolahCtx = document.getElementById('sekolahChart').getContext('2d');
-            
-            // Get average score by school
-            const schoolData = {};
-            resultsData.forEach(result => {
-                const school = result.namaSekolah;
-                if (!schoolData[school]) {
-                    schoolData[school] = {
-                        total: 0,
-                        count: 0
-                    };
-                }
-                schoolData[school].total += (result.score / result.totalQuestions) * 100;
-                schoolData[school].count++;
-            });
-            
-            const schoolLabels = [];
-            const schoolAverages = [];
-            
-            for (const school in schoolData) {
-                schoolLabels.push(school);
-                schoolAverages.push(Math.round(schoolData[school].total / schoolData[school].count));
+            if (selectedSchool !== 'semua') {
+                filteredResults = filteredResults.filter(result => result.sekolah === selectedSchool);
             }
             
-            if (window.sekolahChart) {
-                window.sekolahChart.destroy();
-            }
+            // Sort by date (newest first)
+            filteredResults.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
             
-            window.sekolahChart = new Chart(sekolahCtx, {
-                type: 'pie',
-                data: {
-                    labels: schoolLabels,
-                    datasets: [{
-                        data: schoolAverages,
-                        backgroundColor: [
-                            '#FF6384',
-                            '#36A2EB',
-                            '#FFCE56',
-                            '#4BC0C0',
-                            '#9966FF',
-                            '#FF9F40'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Rata-rata Nilai per Sekolah'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${context.raw}%`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        };
-        
-        // Export data to Excel
-        const exportToExcel = () => {
-            const filterSekolah = document.getElementById('filterSekolah').value;
+            // Create worksheet data
+            const wsData = [
+                ['No', 'Nama', 'Sekolah', 'Nilai', 'Tanggal', 'Jawaban Benar', 'Jawaban Salah']
+            ];
             
-            // Filter results
-            let filteredResults = [...resultsData];
-            if (filterSekolah) {
-                filteredResults = filteredResults.filter(result => result.namaSekolah === filterSekolah);
-            }
-            
-            // Prepare data
-            const data = filteredResults.map((result, index) => {
-                const date = new Date(result.date);
-                return {
-                    'No': index + 1,
-                    'Nama Siswa': result.namaSiswa,
-                    'Nama Sekolah': result.namaSekolah,
-                    'Nilai': `${result.score}/${result.totalQuestions}`,
-                    'Persentase': `${Math.round((result.score / result.totalQuestions) * 100)}%`,
-                    'Tanggal': date.toLocaleDateString('id-ID'),
-                    'Waktu': date.toLocaleTimeString('id-ID')
-                };
+            filteredResults.forEach((result, index) => {
+                const date = new Date(result.tanggal);
+                const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+                
+                wsData.push([
+                    index + 1,
+                    result.nama,
+                    result.sekolah,
+                    result.nilai,
+                    formattedDate,
+                    result.benar,
+                    result.salah
+                ]);
             });
             
             // Create worksheet
-            const ws = XLSX.utils.json_to_sheet(data);
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
             
             // Create workbook
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Rekap Nilai');
             
-            // Generate Excel file
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            // Generate filename
+            const now = new Date();
+            const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
+            const schoolStr = selectedSchool !== 'semua' ? `-${selectedSchool}` : '';
+            const filename = `Rekap-Nilai-Bahasa-Indonesia${schoolStr}-${dateStr}.xlsx`;
             
-            // Convert to blob
-            const s2ab = s => {
-                const buf = new ArrayBuffer(s.length);
-                const view = new Uint8Array(buf);
-                for (let i = 0; i < s.length; i++) {
-                    view[i] = s.charCodeAt(i) & 0xFF;
-                }
-                return buf;
-            };
-            
-            // Save file
-            const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
-            saveAs(blob, 'Rekap_Nilai_Bahasa_Indonesia.xlsx');
-        };
-        
-        // Confirm exit quiz
-        const confirmExitQuiz = () => {
-            if (confirm('Apakah Anda yakin ingin keluar dari quiz? Progres Anda akan hilang.')) {
-                clearInterval(timerInterval);
-                showSection('menuUtama');
+            // Export to file
+            XLSX.writeFile(wb, filename);
+        }
+
+        function saveData() {
+            localStorage.setItem('quizAppData', JSON.stringify(appData.results));
+            updateSchoolFilter();
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('quizAppData');
+            if (savedData) {
+                appData.results = JSON.parse(savedData);
             }
-        };
-        
-        // Initialize the application when the DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+        }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968efbf0605d40cc',t:'MTc1NDE1MjQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96953b61056deba1',t:'MTc1NDIxNzk5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
